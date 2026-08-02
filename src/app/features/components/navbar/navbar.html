@@ -1,70 +1,88 @@
 <nav>
-    <div class="navbar">
-        <div class="logo">
-            Oppa<span style="color: red;">Track</span>
-        </div>
+    <main>
 
-        <div class="search-bar">
-            <form action="" method="post" class="bar">
-                <input type="text" name="search" id="search" placeholder="Buscar Drama">
-                <button type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </form>
-        </div>
-
-        <div class="nav-end">
-
-            <div class="menu">
-                <a href="/">
+        <div class="navbar">
+            <div class="logo">
+                Oppa<span style="color: red;">Track</span>
+            </div>
+    
+            <div class="nav-middle">
+                <div class="menu">
+                    <div class="item active">
+                        <i class="fa-solid fa-house"></i>
+                        <div>
+                            Ínicio
+                        </div>
+                    </div>
                     <div class="item">
-                        Ínicio
-                    </div>
-                </a>
-            </div>
-            <div class="buttons">
-                <div class="login">
-                    Entrar
-                </div>
-                <div class="register">
-                    Cadastrar
-                </div>
-            </div>
-        </div>
-
-        <div class="toggle-navbar" (click)="isMenuOpen = !isMenuOpen">
-            <i class="fa-solid fa-bars"></i>
-        </div>
-
-        <div class="menu-openned" (click)="isMenuOpen = false" [class.open]="isMenuOpen">
-            <div class="open-menu" (click)="$event.stopPropagation()">
-                <div class="menu-container">
-                    <div class="menu-header">
-                        <div class="logo">
-                            Oppa<span style="color: red;">Track</span>
-                        </div>
-                        <i class="fa-solid fa-xmark close-menu" (click)="isMenuOpen = !isMenuOpen"></i>
-                    </div>
-
-                    <form action="" method="post" class="menu-search">
-                        <input type="text" placeholder="Buscar..." name="search-menu" id="search-menu">
-                        <button type="submit">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </form>
-                    <div class="side-menu">
-                        <div class="menu-item" [routerLink]="'/'">
-                            <i class="fa-solid fa-house"></i>
-                            <div>Ínicio</div>
+                        <i class="fa-solid fa-list"></i>
+                        <div>
+                            Dramas
                         </div>
                     </div>
                 </div>
-
-                <div class="footer-menu">
-                    <div class="login-btn">Entrar</div>
-                    <div class="register-btn">Registrar</div>
+            </div>
+    
+            <div class="search-bar">
+                <form action="" method="post" class="bar">
+                    <input type="text" name="search" id="search" placeholder="Buscar Drama">
+                    <button type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+    
+                <div class="buttons">
+                    <div class="login">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <div>
+                            Entrar
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="toggle-navbar" (click)="isMenuOpen = !isMenuOpen">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+    
+            <div class="menu-openned" (click)="isMenuOpen = false" [class.open]="isMenuOpen">
+                <div class="open-menu" (click)="$event.stopPropagation()">
+                    <div class="menu-container">
+                        <div class="menu-header">
+                            <div class="logo">
+                                Oppa<span style="color: red;">Track</span>
+                            </div>
+                            <i class="fa-solid fa-xmark close-menu" (click)="isMenuOpen = !isMenuOpen"></i>
+                        </div>
+    
+                        <form action="" method="post" class="menu-search">
+                            <input type="text" placeholder="Buscar..." name="search-menu" id="search-menu">
+                            <button type="submit">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </form>
+                        <div class="side-menu">
+                            <div class="menu-item active" [routerLink]="'/'">
+                                <i class="fa-solid fa-house"></i>
+                                <div>Ínicio</div>
+                            </div>
+                            <div class="menu-item" [routerLink]="'/'">
+                                <i class="fa-solid fa-list"></i>
+                                <div>Dramas</div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="footer-menu">
+                        <div class="login-btn">
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            <div>
+                                Entrar
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </nav>

@@ -1,0 +1,90 @@
+<app-navbar></app-navbar>
+
+<main>
+  <!-- Greetings -->
+  <section class="greetings">
+    <div class="header-info">
+      <div class="comunity">
+        <div class="circle"></div>
+        <div class="active">10 Dorameiros ativos agora.</div>
+      </div>
+
+      <div class="update">
+        <i class="fa-solid fa-rotate-right"></i>
+        <div>Atualizado agora</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Most watched dramas -->
+  <section>
+    <div class="info-text">
+      TOP 3 MAIS ASSISTIDOS
+    </div>
+
+    <div class="hotdramas">
+      <ng-container *ngFor="let drama of featuredDrama; let i = index">
+        <div class="most-watched">
+          <div class="title-watched">
+            <i class="fa-solid fa-ranking-star"></i>
+            <span>
+              #{{ i + 1 }} Mais assistido hoje
+            </span>
+          </div>
+          <div class="drama">
+            <img [src]="drama.posterUrl" [alt]="drama.title" class="poster">
+
+            <div class="informations">
+              <div class="title">
+                {{ drama.title }}
+              </div>
+              <div class="score"><i class="fa-solid fa-star"></i> <span>{{ drama.rating }} / 10</span></div>
+              <div class="release">
+                <i class="fa-solid fa-calendar"></i>
+                <span>{{ drama.releaseDate }}</span>
+              </div>
+              <div class="seasons">
+                <i class="fa-solid fa-hourglass-start"></i>
+                <span>{{ drama.totalSeasons }} Temporada{{ drama.totalSeasons > 1 ? 's' : ''}}</span>
+              </div>
+              <div class="episodes">
+                <i class="fa-solid fa-tv"></i>
+                <span>{{ drama.totalEpisodes}} Episódio{{ drama.totalEpisodes > 1 ? 's' : ''}}</span>
+              </div>
+              <div class="btn-info">
+                <i class="fa-solid fa-circle-plus"></i>
+                <div>
+                  Informações
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+
+  <!-- Statistic -->
+  <section>
+    <div class="info-text">
+      MÉTRICAS GERAIS
+    </div>
+
+    <div class="statistic">
+      <!-- Global Stats -->
+      <div class="global-stats">
+        <ng-container *ngFor="let metric of metrics">
+          <div class="card-stats">
+            <div class="title"><i [class]="metric.icon"></i> <span>{{ metric.title}}</span>
+            </div>
+            <div class="value">
+              <span *ngIf="metric.isHighlight"><i class="fa-solid fa-star" style="color: yellow;"></i></span>{{
+              metric.value }}
+            </div>
+            <div class="subtitle">{{ metric.subtitle }}</div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+</main>

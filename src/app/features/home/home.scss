@@ -1,0 +1,298 @@
+:host {
+  // Paleta Principal do OppaTrack
+  $bg-dark: #0f0f11;
+  $card-bg: #18181c;
+  $card-border: #26262b;
+
+  // Marca & Destaques
+  $primary-red: #e50914;
+  $accent-red: #ff4d4d;
+
+  // Tipografia (Contraste para Leitura)
+  $text-primary: #f4f4f6;
+  $text-secondary: #a1a1aa;
+  $text-muted: #71717a;
+
+  // Ajuste de padding tag main
+  main {
+    padding: 1rem 0 0 0;
+    gap: 1rem;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+
+  // Titulo de seção
+  .info-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $text-secondary;
+  }
+
+  // Seção de boas vindas
+  .greetings {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    & .header-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .65rem;
+
+      & .comunity {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .5rem;
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        padding: .35rem .75rem;
+        border-radius: 1rem;
+        opacity: .75;
+        font-weight: 600;
+        text-transform: uppercase;
+
+        .circle {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background-color: #ef4444;
+        }
+      }
+
+      & .update {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: .5rem;
+        background: rgba(30, 30, 30, 0.2);
+        padding: .5rem 1.5rem;
+        border-radius: 1.5rem;
+        cursor: pointer;
+        transition: .35s ease-in-out;
+        opacity: .75;
+
+        &:hover {
+          background: rgba(30, 30, 30, 0.35);
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  // Seção de hot 3
+  .hotdramas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+
+    .most-watched {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1rem;
+      background: $card-bg;
+      border: 1px solid $card-border;
+      border-radius: .5rem;
+
+      .title-watched {
+        display: flex;
+        align-items: center;
+        gap: .25rem;
+        font-size: .775rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: $accent-red;
+      }
+
+      .dramalist-watched {
+        display: grid;
+        // grid-template-columns: 2.2fr 1fr;
+        // grid-template-rows: 1fr 1fr;
+        align-items: stretch;
+        justify-content: center;
+        gap: .5rem;
+
+        .featured {
+          // grid-column: 1 / 2;
+          // grid-row: 1 / span 2;
+          display: flex;
+          gap: .75rem;
+          align-items: center;
+        }
+
+        .poster {
+          width: 130px;
+          border-radius: .5rem;
+          aspect-ratio: 2 / 3;
+          object-fit: cover;
+          flex-shrink: 0;
+          cursor: pointer;
+          opacity: .75;
+
+          img {
+            width: 130px;
+            border-radius: .5rem;
+            aspect-ratio: 2 / 3;
+            object-fit: cover;
+            flex-shrink: 0;
+          }
+
+        }
+      }
+
+      .drama {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .5rem;
+        width: 100%;
+
+        .poster {
+          width: 130px;
+          border-radius: .5rem;
+          aspect-ratio: 2 / 3;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .informations {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          padding: 1rem 0;
+          gap: .25rem;
+
+          .title {
+            font-size: 1rem;
+            font-weight: 600;
+          }
+
+          span {
+            color: $text-secondary;
+          }
+
+          .score {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            color: #ffd900;
+          }
+
+          .release {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+          }
+
+          .seasons {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+          }
+
+          .episodes {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+          }
+
+          .btn-info {
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: .25rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ce3c3c;
+            border-radius: 1rem;
+            transition: .35s ease;
+            gap: .25rem;
+            cursor: pointer;
+            margin: 1rem auto auto auto;
+
+            &:hover {
+              color: #ef4444;
+              background: rgba(239, 68, 68, 0.2);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Seção de estatisticas
+  .global-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    gap: .5rem;
+
+    .card-stats {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: .75rem 1.5rem;
+      border-radius: .5rem;
+      background: $card-bg;
+      border: 1px solid $card-border;
+
+      .title {
+        display: flex;
+        align-items: center;
+        gap: .25rem;
+        font-size: .775rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: $accent-red;
+
+        i {
+          font-size: .85rem;
+          width: 14px;
+          text-align: center;
+        }
+      }
+
+      .subtitle {
+        font-size: .75rem;
+        color: $text-muted;
+        font-weight: 600;
+      }
+
+      .value {
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: $text-primary;
+
+        i {
+          font-size: 2rem;
+        }
+
+        &.link {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+
+  // Seção de dramas em destaque
+  @media screen and (max-width: 1220px) {
+    .statistic {
+      grid-template-columns: 1fr 1fr;
+
+      .global-stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

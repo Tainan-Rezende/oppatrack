@@ -9,8 +9,10 @@ import { RouterLink } from '@angular/router';
 })
 export class Navbar {
   public isMenuOpen: boolean;
+  public menuList: string[];
 
   constructor() {
     this.isMenuOpen = false;
+    this.menuList = []
   }
 }
