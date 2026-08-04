@@ -1,0 +1,32 @@
+:host {
+    footer {
+        display: flex;
+        border-top: 3px solid #151515;
+        padding: 1rem 0;
+        margin: 1rem 0 0 0;
+
+        font-family: 'Poppins', sans-serif;
+        font-size: .875rem;
+
+        main {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between !important;
+            font-size: .7rem;
+
+            .links {
+                display: flex;
+                gap: 1rem;
+
+                a {
+                    font-size: .7rem;
+
+                    &:hover {
+                        color: #ef4444;
+                    }
+                }
+            }
+        }
+
+    }
+}

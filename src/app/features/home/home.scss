@@ -13,12 +13,7 @@
   $text-secondary: #a1a1aa;
   $text-muted: #71717a;
 
-  // Ajuste de padding tag main
-  main {
-    padding: 1rem 0 0 0;
-    gap: 1rem;
-  }
-
+  // Section
   section {
     display: flex;
     flex-direction: column;
@@ -30,6 +25,11 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: $text-secondary;
+    padding: .5rem 0 0 0;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
   }
 
   // Seção de boas vindas
@@ -81,6 +81,111 @@
           background: rgba(30, 30, 30, 0.35);
           opacity: 1;
         }
+      }
+    }
+  }
+
+  .hot-dramas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .5rem;
+
+    .item-drama {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid $card-border;
+      border-radius: .5rem;
+
+      .drama-card {
+        width: 100%;
+        cursor: pointer;
+        transition: .35s ease-in-out;
+        opacity: .75;
+        font-size: .75rem;
+
+        .drama-image {
+          background-size: cover;
+          background-position: center 25%;
+          ;
+          width: 100%;
+          aspect-ratio: 2 / 1;
+          border-radius: .5rem;
+          padding: .5rem;
+          position: relative;
+          transition: background-size 0.35s ease-in-out, background-position 0.35s ease-in-out;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: inherit;
+            background-size: cover;
+            background-position: center 25%;
+            transition: transform 0.35s ease-in-out;
+            z-index: 1;
+          }
+
+          &:hover::before {
+            transform: scale(1.08);
+          }
+
+          >* {
+            position: relative;
+            z-index: 2;
+          }
+
+          .drama-i {
+            background: rgba(0, 0, 0, 0.75);
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: .25rem 1rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            font-weight: 600;
+            border-radius: .25rem;
+            z-index: 1;
+          }
+
+          .drama-data {
+            position: absolute;
+            display: flex;
+            align-items: flex-end;
+            gap: .25rem;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
+            padding: 1rem .35rem .5rem .35rem;
+            font-size: .875rem;
+            border-radius: 0 0 .5rem .5rem;
+            height: 20vh;
+
+            .data {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              justify-content: center;
+              gap: .25rem;
+              width: 100%;
+              text-shadow: 0 0 1rem rgba(0, 0, 0, 1);
+
+              div {
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+              }
+            }
+          }
+        }
+
+        &:hover {
+          opacity: 1;
+        }
+
+
       }
     }
   }
@@ -155,7 +260,7 @@
         width: 100%;
 
         .poster {
-          width: 130px;
+          width: 85px;
           border-radius: .5rem;
           aspect-ratio: 2 / 3;
           object-fit: cover;
@@ -168,9 +273,10 @@
           width: 100%;
           padding: 1rem 0;
           gap: .25rem;
+          font-size: .75rem;
 
           .title {
-            font-size: 1rem;
+            font-size: .875rem;
             font-weight: 600;
           }
 
@@ -203,25 +309,26 @@
             gap: .5rem;
           }
 
-          .btn-info {
-            width: fit-content;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: .25rem 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            color: #ce3c3c;
-            border-radius: 1rem;
-            transition: .35s ease;
-            gap: .25rem;
-            cursor: pointer;
-            margin: 1rem auto auto auto;
+        }
+      }
 
-            &:hover {
-              color: #ef4444;
-              background: rgba(239, 68, 68, 0.2);
-            }
-          }
+      .btn-info {
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .25rem 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ce3c3c;
+        border-radius: 1rem;
+        transition: .35s ease;
+        gap: .25rem;
+        cursor: pointer;
+        margin: 1rem auto auto auto;
+
+        &:hover {
+          color: #ef4444;
+          background: rgba(239, 68, 68, 0.2);
         }
       }
     }
@@ -284,6 +391,88 @@
     }
   }
 
+  // Hot Actors Section
+  .hot-actors {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: .5rem;
+
+    .item-actor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid $card-border;
+      border-radius: .5rem;
+
+      .actor-card {
+        width: 100%;
+        cursor: pointer;
+        transition: .35s ease-in-out;
+        opacity: .75;
+        font-size: .75rem;
+
+        .actor-image {
+          background-size: cover;
+          background-position: center;
+          width: 100%;
+          aspect-ratio: 3 / 4;
+          border-radius: .5rem;
+          padding: .5rem;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: inherit;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.35s ease-in-out;
+            z-index: 1;
+          }
+
+          >* {
+            position: relative;
+            z-index: 2;
+          }
+
+          .actor-i {
+            background: rgba(0, 0, 0, 0.75);
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: .25rem 1rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: .25rem;
+          }
+
+          .actor-name {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: .25rem;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5), transparent);
+            padding: 1rem .35rem .5rem .35rem;
+            font-size: .875rem;
+            border-radius: 0 0 .5rem .5rem;
+          }
+        }
+
+        &:hover {
+          opacity: 1;
+
+          .actor-image::before {
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+  }
 
   // Seção de dramas em destaque
   @media screen and (max-width: 1220px) {

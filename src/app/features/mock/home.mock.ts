@@ -1,4 +1,4 @@
-import { Drama, MetricCard } from "../../models/home..model";
+import { Drama, MetricCard } from "../../models/home.model";
 
 export const FEATURED_DRAMAS_MOCK: Drama[] = [
   {
