@@ -41,8 +41,8 @@
                 </div>
             </div>
     
-            <div class="toggle-navbar" (click)="isMenuOpen = !isMenuOpen">
-                <i class="fa-solid fa-bars"></i>
+            <div class="toggle-navbar" >
+                <i class="fa-solid fa-bars" (click)="isMenuOpen = !isMenuOpen"></i>
             </div>
     
             <div class="menu-openned" (click)="isMenuOpen = false" [class.open]="isMenuOpen">

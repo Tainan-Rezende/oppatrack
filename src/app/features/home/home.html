@@ -17,28 +17,28 @@
 <section>
   <div class="info-text">
     <i class="fa-solid fa-fire"></i>
-    <div>
-      TOP 3 MAIS ASSISTIDOS
-    </div>
+    <div>TOP 3 MAIS ASSISTIDOS</div>
   </div>
 
   <div class="hot-dramas-grid">
     <ng-container *ngFor="let drama of featuredDrama; let i = index">
       <div class="item-drama">
         <div class="drama-card">
-          <div class="drama-image" [style.background-image]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'">
-            <div class="drama-i"><i class="fa-solid fa-fire" *ngIf="i === 0" style="color: red;"></i> #{{ i + 1 }}</div>
+          <div
+            class="drama-image"
+            [style.--backdrop]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'"
+            [style.--poster]="'url(' + drama.posterUrl + ')'"
+          >
+            <div class="drama-i">
+              <i class="fa-solid fa-fire" *ngIf="i === 0" style="color: red"></i> #{{ i + 1 }}
+            </div>
             <div class="drama-data">
               <div class="data">
                 <div>
-                    <i class="fa-solid fa-tv"></i> <b>{{ drama.title }}</b>
+                  <i class="fa-solid fa-tv"></i> <b>{{ drama.title }}</b>
                 </div>
-                <div>
-                  <i class="fa-solid fa-star"></i> {{ drama.rating }} / 10
-                </div>
-                <div>
-                  <i class="fa-solid fa-calendar"></i> {{ drama.releaseDate }}
-                </div>
+                <div><i class="fa-solid fa-star"></i> {{ drama.rating }} / 10</div>
+                <div><i class="fa-solid fa-calendar"></i> {{ drama.releaseDate }}</div>
               </div>
             </div>
           </div>
@@ -50,20 +50,20 @@
 
 <!-- Statistic -->
 <section>
-  <div class="info-text">
-    MÉTRICAS GERAIS
-  </div>
+  <div class="info-text">MÉTRICAS GERAIS</div>
 
   <div class="statistic">
     <!-- Global Stats -->
     <div class="global-stats">
       <ng-container *ngFor="let metric of metrics">
         <div class="card-stats">
-          <div class="title"><i [class]="metric.icon"></i> <span>{{ metric.title}}</span>
+          <div class="title">
+            <i [class]="metric.icon"></i> <span>{{ metric.title }}</span>
           </div>
           <div class="value">
-            <span *ngIf="metric.isHighlight"><i class="fa-solid fa-star" style="color: yellow;"></i></span>{{
-            metric.value }}
+            <span *ngIf="metric.isHighlight"
+              ><i class="fa-solid fa-star" style="color: yellow"></i></span
+            >{{ metric.value }}
           </div>
           <div class="subtitle">{{ metric.subtitle }}</div>
         </div>
@@ -74,15 +74,15 @@
 
 <!-- HOT ACTORS -->
 <section>
-  <div class="info-text">
-    Atores / Atrizes em alta
-  </div>
+  <div class="info-text">Atores / Atrizes em alta</div>
   <div class="hot-actors">
     <ng-container *ngFor="let actor of hotActors; let i = index">
       <div class="item-actor">
         <div class="actor-card">
           <div class="actor-image" [style.background-image]="'url(' + actor.photoUrl + ')'">
-            <div class="actor-i"><i class="fa-solid fa-fire" *ngIf="i <= 2" style="color: red;"></i>#{{ i + 1 }}</div>
+            <div class="actor-i">
+              <i class="fa-solid fa-fire" *ngIf="i <= 2" style="color: red"></i>#{{ i + 1 }}
+            </div>
             <div class="actor-name"><i class="fa-solid fa-masks-theater"></i> {{ actor.name }}</div>
           </div>
         </div>
