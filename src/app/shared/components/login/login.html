@@ -1,0 +1,19 @@
+<div class="modal-box" (click)="close()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <h1>Entrar</h1>
+        <p class="subtitle">
+            Envie <span class="command">/webtoken</span> para o bot para obter seu código.
+        </p>
+
+        <div class="input-token">
+            <label for="token">CÓDIGO DE 8 DÍGITOS</label>
+            <div class="input-field">
+                <input id="token" type="text" placeholder="• • • • • • • •" maxlength="8" autocomplete="off" />
+            </div>
+
+            <button class="btn-submit">
+                Entrar <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>

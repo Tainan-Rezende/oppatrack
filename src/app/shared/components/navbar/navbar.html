@@ -5,7 +5,7 @@
             <div class="logo">
                 Oppa<span style="color: red;">Track</span>
             </div>
-    
+
             <div class="nav-middle">
                 <div class="menu">
                     <div class="item active">
@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-    
+
             <div class="search-bar">
                 <form action="" method="post" class="bar">
                     <input type="text" name="search" id="search" placeholder="Buscar Drama">
@@ -30,21 +30,23 @@
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                 </form>
-    
+
+                @if (isAuthOpen) {
+                <app-login (closeModal)="closeAuth()"></app-login>
+                }
+
                 <div class="buttons">
-                    <div class="login">
+                    <div class="login" (click)="openAuth()">
                         <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        <div>
-                            Entrar
-                        </div>
+                        <div>Entrar</div>
                     </div>
                 </div>
             </div>
-    
-            <div class="toggle-navbar" >
+
+            <div class="toggle-navbar">
                 <i class="fa-solid fa-bars" (click)="isMenuOpen = !isMenuOpen"></i>
             </div>
-    
+
             <div class="menu-openned" (click)="isMenuOpen = false" [class.open]="isMenuOpen">
                 <div class="open-menu" (click)="$event.stopPropagation()">
                     <div class="menu-container">
@@ -54,7 +56,7 @@
                             </div>
                             <i class="fa-solid fa-xmark close-menu" (click)="isMenuOpen = !isMenuOpen"></i>
                         </div>
-    
+
                         <form action="" method="post" class="menu-search">
                             <input type="text" placeholder="Buscar..." name="search-menu" id="search-menu">
                             <button type="submit">
@@ -72,9 +74,9 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="footer-menu">
-                        <div class="login-btn">
+                        <div class="login-btn" (click)="openAuth()">
                             <i class="fa-solid fa-arrow-right-to-bracket"></i>
                             <div>
                                 Entrar
