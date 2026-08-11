@@ -1,0 +1,12 @@
+<section class="catalog-container">
+    <div class="catalog-header">
+        <h1>Catálogo de Dramas</h1>
+        <p>Explore todos os doramas disponíveis na plataforma</p>
+    </div>
+
+    <div class="dramas-grid">
+        @for (drama of dramaList; track drama.id) {
+        <app-drama-card [drama]="drama" />
+        }
+    </div>
+</section>

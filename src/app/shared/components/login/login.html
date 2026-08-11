@@ -8,10 +8,10 @@
         <div class="input-token">
             <label for="token">CÓDIGO DE 8 DÍGITOS</label>
             <div class="input-field">
-                <input id="token" type="text" placeholder="• • • • • • • •" maxlength="8" autocomplete="off" />
+                <input id="token" type="text" inputmode="numeric" placeholder="• • • • • • • •" maxlength="8" autocomplete="off" (input)="onTokenInput($event)" [value]="token" />
             </div>
 
-            <button class="btn-submit">
+            <button class="btn-submit" [disabled]="token.length !== 8">
                 Entrar <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>

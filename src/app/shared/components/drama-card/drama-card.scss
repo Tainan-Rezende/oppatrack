@@ -1,0 +1,79 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.drama-card {
+    width: 100%;
+    cursor: pointer;
+    font-size: 0.75rem;
+
+    .drama-image {
+        width: 100%;
+        aspect-ratio: 2 / 3; // Proporção padrão de poster (vertical)
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: var(--poster);
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.35s ease-in-out;
+            z-index: 1;
+        }
+
+        &:hover::before {
+            transform: scale(1.08);
+        }
+
+        >* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .drama-data {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 10%, rgba(0, 0, 0, 0.4) 70%, transparent);
+            padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+            font-size: 0.85rem;
+
+            .data {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+                width: 100%;
+                text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+
+                .title-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    width: 100%;
+
+                    b {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 100%;
+                    }
+                }
+
+                div {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,33 @@
+:host {
+    display: block;
+    padding: 2rem 1rem;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.catalog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    .catalog-header {
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0 0 0.25rem 0;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            margin: 0;
+        }
+    }
+
+    .dramas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+}
