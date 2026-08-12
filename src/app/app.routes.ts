@@ -18,6 +18,10 @@ export const routes: Routes = [
             {
                 path: 'dramas',
                 loadComponent: () => import('./features/catalog/catalog').then(m => m.Catalog)
+            },
+            {
+                path: 'dramas/:id',
+                loadComponent: () => import('./features/drama-detail/drama-detail').then(m => m.DramaDetail)
             }
         ]
 

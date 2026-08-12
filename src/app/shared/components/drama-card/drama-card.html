@@ -1,9 +1,6 @@
 <div class="drama-card">
-  <div 
-    class="drama-image"
-    [style.--backdrop]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'"
-    [style.--poster]="'url(' + drama.posterUrl + ')'"
-  >
+  <div class="drama-image" [style.--backdrop]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'"
+    [style.--poster]="'url(' + drama.posterUrl + ')'" [routerLink]="['/dramas', drama.id]">
     <div class="drama-data">
       <div class="data">
         <div class="title-row">
@@ -11,7 +8,7 @@
           <b>{{ drama.title }}</b>
         </div>
         <div><i class="fa-solid fa-star"></i> {{ drama.rating | number:'1.1-1' }} / 10</div>
-        <div><i class="fa-solid fa-calendar"></i> {{ drama.releaseDate }}</div>
+        <div><i class="fa-solid fa-calendar"></i> {{ drama.releaseDate | date:'dd MMM yyyy' }}</div>
       </div>
     </div>
   </div>

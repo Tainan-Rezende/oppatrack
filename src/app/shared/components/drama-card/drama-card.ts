@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { Drama } from '../../../models/home.model';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-drama-card',
-  imports: [CommonModule],
+  imports: [CommonModule, DatePipe, RouterLink],
   templateUrl: './drama-card.html',
   styleUrl: './drama-card.scss',
 })

@@ -8,18 +8,13 @@
 
             <div class="nav-middle">
                 <div class="menu">
-                    <div class="item active">
-                        <i class="fa-solid fa-house"></i>
-                        <div>
-                            Ínicio
-                        </div>
+                    @for (menu of menuList; track menu.route) {
+                    <div class="item" [routerLink]="menu.route" routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: menu.exact || false }">
+                        <i [class]="menu.icon"></i>
+                        <div>{{ menu.label }}</div>
                     </div>
-                    <div class="item">
-                        <i class="fa-solid fa-list"></i>
-                        <div>
-                            Dramas
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
 

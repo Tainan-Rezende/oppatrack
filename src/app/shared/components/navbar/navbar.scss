@@ -3,12 +3,13 @@
   // Global
   nav {
     background-color: rgba(18, 18, 18, 0.98);
-    // backdrop-filter: blur(3px);
     border-bottom: 3px solid rgba(25, 25, 25, 1);
     color: #fff;
     padding: 0.5rem 1rem;
     width: 100%;
     font-size: 0.875rem;
+    position: relative;
+    z-index: 1;
 
     // Navbar structure
     & .navbar {
