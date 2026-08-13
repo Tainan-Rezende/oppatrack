@@ -3,46 +3,86 @@
         <div class="name">
             {{ drama?.title ? drama?.title : '' }}
         </div>
-        <div class="status">
-            {{ drama?.status }}
+        <div class="info">
+            <div *ngIf="drama?.status">
+                @switch(drama?.status) {
+                @case ('ongoing') {
+                <i class="fa-solid fa-tower-broadcast" style="color: #FF4444;"></i>
+                <span>
+                    Em Exibição
+                </span>
+                }
+                @case ('completed') {
+                <i class="fa-solid fa-circle-check" style="color: greenyellow;"></i>
+                <span>
+                    Finalizado
+                </span>
+                }
+                @case ('upcoming') {
+                <i class="fa-solid fa-clock" style="color: #f59e0b;"></i>
+                <span>
+                    Em Breve
+                </span>
+                }
+                @default {}
+                }
+            </div>
+            <div *ngIf="drama?.rating">
+                <i class="fa-solid fa-star" style="color: yellow;"></i>
+                <span>{{ drama?.rating | number:'1.1-1' }} / 10</span>
+            </div>
+            <div *ngIf="drama?.releaseDate">
+                <i class="fa-solid fa-calendar"></i>
+                <span>{{ drama?.releaseDate | date:'dd MMMM yyyy' }}</span>
+            </div>
+            <div *ngIf="drama?.genres">
+                <i class="fa-solid fa-masks-theater"></i>
+                <span>
+                    {{ drama?.genres?.join(', ') }}
+                </span>
+            </div>
         </div>
     </div>
 </header>
 
 <div class="navigation">
-    <div class="nav-item">
+    <div class="nav-item active">
         <i class="fa-solid fa-circle-info"></i>
         <span>Informações</span>
+    </div>
+    <div class="nav-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Elenco</span>
+    </div>
+    <div class="nav-item">
+        <i class="fa-solid fa-camera"></i>
+        <span>Fotos</span>
     </div>
 </div>
 
 <div class="container">
-    <!-- <aside>
-        <div class="aside-title">
-            <i class="fa-solid fa-bars"></i>
-            <span>
-                Menu Rápido
-            </span>
+    <div class="info-grid">
+        <div class="main-container">
+            dasdas
         </div>
-        <div class="menu">
-            <div class="menu-item">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>Informações</span>
+        <div class="main-container">
+            <div>
+
+            </div>
+            <div>
+                <img [src]="drama?.posterUrl" [alt]="drama?.title" class="poster">
+
+                <fieldset>
+                    <legend>
+                        Sinopse
+                    </legend>
+                    <div class="synopsis">
+                        {{
+                        drama?.synopsis ? drama?.synopsis : 'Nenhuma sinopse disponível no momento.'
+                        }}
+                    </div>
+                </fieldset>
             </div>
         </div>
-    </aside> -->
-    <div class="main-container">
-        <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo vel maxime possimus beatae et blanditiis suscipit,
-            odio saepe nostrum optio aut tempore fuga. Tempore, corrupti. Minima pariatur doloribus repellendus quod!
-        </p>
-        <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor nobis, minima aperiam doloremque ad eum excepturi esse corrupti delectus fugit cum odit temporibus voluptas itaque maxime libero sit! Deserunt, vel.
-        </p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ex sed veniam minus itaque expedita odio consequatur quibusdam, voluptates facere ipsam aliquid consequuntur nam commodi deleniti. Reiciendis maxime eligendi reprehenderit fugiat.</p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ex sed veniam minus itaque expedita odio consequatur quibusdam, voluptates facere ipsam aliquid consequuntur nam commodi deleniti. Reiciendis maxime eligendi reprehenderit fugiat.</p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ex sed veniam minus itaque expedita odio consequatur quibusdam, voluptates facere ipsam aliquid consequuntur nam commodi deleniti. Reiciendis maxime eligendi reprehenderit fugiat.</p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ex sed veniam minus itaque expedita odio consequatur quibusdam, voluptates facere ipsam aliquid consequuntur nam commodi deleniti. Reiciendis maxime eligendi reprehenderit fugiat.</p>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ex sed veniam minus itaque expedita odio consequatur quibusdam, voluptates facere ipsam aliquid consequuntur nam commodi deleniti. Reiciendis maxime eligendi reprehenderit fugiat.</p>
     </div>
 </div>

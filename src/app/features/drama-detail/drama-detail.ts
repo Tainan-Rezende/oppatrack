@@ -6,7 +6,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-drama-detail',
-  imports: [CommonModule, DatePipe],
+  imports: [CommonModule],
   templateUrl: './drama-detail.html',
   styleUrl: './drama-detail.scss',
 })

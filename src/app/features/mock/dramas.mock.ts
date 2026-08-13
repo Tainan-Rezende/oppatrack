@@ -10,7 +10,9 @@ export const MOCK_DRAMAS: Drama[] = [
     endDate: '2026-04-10',
     status: 'ongoing',
     releaseDays: ['Sexta-feira', 'Sábado'],
-    synopsis: 'Dois jovens de mundos completamente opostos se encontram em um momento difícil de suas vidas e descobrem que a presença um do outro é capaz de acender uma nova esperança no futuro.',
+    synopsis: `Na juventude, Yeon Tae-oh e Mo Eun-ah construíram um mundo só deles em uma pacata cidade do interior. Entre conversas silenciosas e passeios de bicicleta, o amor desajeitado da adolescência fez com que um se tornasse oporto seguro e a luz do outro nos momentos mais difíceis de suas vidas. Porém, as dores do amadurecimento e as escolhas inevitáveis da vida adulta acabaram forçando os dois a seguirem caminhos opostos.
+
+Dez anos se passaram e, agora aos 30 anos, seus caminhos voltam a se cruzar na agitada Seul. Tae-oh trabalha como maquinista de metrô, lidando com a rotina e o peso do passado, enquanto Eun-ah atua como gerente de uma charmosa pousada histórica. Ao se reencontrarem em fases completamente diferentes, eles precisam confrontar antigas feridas não curadas, mágoas guardadas e a descoberta de que aquele sentimento do passado ainda é capaz de iluminar o futuro de ambos.`,
     genres: ['Romance', 'Drama', 'Juventude'],
     totalSeasons: 1,
     totalEpisodes: 10,
