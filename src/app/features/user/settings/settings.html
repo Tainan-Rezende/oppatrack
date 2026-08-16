@@ -1,0 +1,340 @@
+<div class="settings-container">
+  <header class="settings-header">
+    <h1>Configurações da Conta</h1>
+    <p>Gerencie sua identidade, redes sociais e preferências de exibição</p>
+  </header>
+
+  @if (successMessage()) {
+    <div class="feedback-banner success">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ successMessage() }}</span>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="feedback-banner error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <div class="settings-layout">
+    <!-- Menu Lateral de Abas -->
+    <aside class="settings-sidebar">
+      <button
+        type="button"
+        class="nav-tab"
+        [class.active]="activeTab() === 'profile'"
+        (click)="setTab('profile')"
+      >
+        <i class="fa-solid fa-user-gear"></i>
+        <span>Perfil & Redes</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-tab"
+        [class.active]="activeTab() === 'security'"
+        (click)="setTab('security')"
+      >
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Segurança & Senha</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-tab"
+        [class.active]="activeTab() === 'preferences'"
+        (click)="setTab('preferences')"
+      >
+        <i class="fa-solid fa-sliders"></i>
+        <span>Preferências</span>
+      </button>
+    </aside>
+
+    <!-- Painel de Conteúdo -->
+    <section class="settings-panel">
+      <!-- ABA 1: PERFIL & REDES SOCIAIS -->
+      <!-- ABA 1: PERFIL & REDES SOCIAIS -->
+      @if (activeTab() === 'profile') {
+        <form class="settings-form" (submit)="$event.preventDefault(); onSaveProfile()">
+          
+          <div class="section-title">
+            <h2>Identidade Pública</h2>
+            <p>Essas informações aparecerão no seu perfil e listas compartilhadas</p>
+          </div>
+
+          <!-- Upload de Foto de Perfil -->
+          <div class="avatar-upload-card">
+            <div class="avatar-preview-wrapper" (click)="avatarInput.click()">
+              @if (avatarUrl()) {
+                <img [src]="avatarUrl()" alt="Avatar de perfil" class="avatar-img" />
+              } @else {
+                <div class="avatar-placeholder">
+                  <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+              }
+              
+              <div class="avatar-overlay">
+                @if (isUploadingAvatar()) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-camera"></i>
+                }
+              </div>
+            </div>
+
+            <div class="avatar-info">
+              <h3>Foto de Perfil</h3>
+              <p>Recomendado: PNG ou JPG quadrada de até 3MB.</p>
+              
+              <input
+                #avatarInput
+                type="file"
+                accept="image/png, image/jpeg, image/webp"
+                (change)="onAvatarSelected($event)"
+                style="display: none"
+              />
+
+              <button
+                type="button"
+                class="btn-change-avatar"
+                [disabled]="isUploadingAvatar()"
+                (click)="avatarInput.click()"
+              >
+                <i class="fa-solid fa-upload"></i>
+                <span>{{ isUploadingAvatar() ? 'Enviando foto...' : 'Trocar Foto' }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bloco do Código de Perfil -->
+          <div class="profile-code-box">
+            <div class="code-info">
+              <span class="lbl">Seu Código de Perfil</span>
+              <strong class="val">{{ authService.currentProfile()?.profile_code }}</strong>
+            </div>
+            <span class="badge-fixed"><i class="fa-solid fa-lock"></i> Permanente</span>
+          </div>
+
+          <div class="form-group">
+            <label for="set-username">Nome de Exibição</label>
+            <input
+              id="set-username"
+              type="text"
+              [value]="username()"
+              (input)="username.set($any($event.target).value)"
+              placeholder="Seu nome ou apelido"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="set-bio">Sobre Você (Bio)</label>
+            <textarea
+              id="set-bio"
+              rows="3"
+              maxlength="160"
+              placeholder="Ex: Apaixonado por rom-coms e thrillers coreanos..."
+              [value]="bio()"
+              (input)="bio.set($any($event.target).value)"
+            ></textarea>
+            <small class="char-hint">{{ bio().length }}/160 caracteres</small>
+          </div>
+
+          <div class="section-title divider">
+            <h2>Redes Sociais & Perfis</h2>
+            <p>Conecte seus links para outros fãs de dorama encontrarem você</p>
+          </div>
+
+          <div class="social-grid">
+            <div class="form-group">
+              <label><i class="fa-brands fa-instagram"></i> Instagram</label>
+              <div class="input-addon">
+                <span>&#64;</span>
+                <input
+                  type="text"
+                  placeholder="usuario"
+                  [value]="instagram()"
+                  (input)="instagram.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-brands fa-x-twitter"></i> X (Twitter)</label>
+              <div class="input-addon">
+                <span>&#64;</span>
+                <input
+                  type="text"
+                  placeholder="usuario"
+                  [value]="twitter()"
+                  (input)="twitter.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-brands fa-telegram"></i> Telegram</label>
+              <div class="input-addon">
+                <span>&#64;</span>
+                <input
+                  type="text"
+                  placeholder="usuario"
+                  [value]="telegram()"
+                  (input)="telegram.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-brands fa-tiktok"></i> TikTok</label>
+              <div class="input-addon">
+                <span>&#64;</span>
+                <input
+                  type="text"
+                  placeholder="usuario"
+                  [value]="tiktok()"
+                  (input)="tiktok.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-brands fa-discord"></i> Discord</label>
+              <input
+                type="text"
+                placeholder="Ex: usuário ou tag"
+                [value]="discord()"
+                (input)="discord.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label><i class="fa-solid fa-list-check"></i> MyDramaList</label>
+              <input
+                type="text"
+                placeholder="Ex: seu_usuario"
+                [value]="mydramalist()"
+                (input)="mydramalist.set($any($event.target).value)"
+              />
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <button type="submit" class="btn-save" [disabled]="isSaving()">
+              @if (isSaving()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Salvando...</span>
+              } @else {
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span>Salvar Alterações</span>
+              }
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- ABA 2: SEGURANÇA & SENHA -->
+      @if (activeTab() === 'security') {
+        <form class="settings-form" (submit)="$event.preventDefault(); onUpdatePassword()">
+          <div class="section-title">
+            <h2>Alterar Senha</h2>
+            <p>Defina uma nova senha segura para acessar sua conta</p>
+          </div>
+
+          <div class="form-group">
+            <label for="set-email">E-mail Vinculado</label>
+            <input
+              id="set-email"
+              type="text"
+              [value]="authService.currentProfile()?.email"
+              disabled
+            />
+            <small class="hint">Usado para recuperação de acesso.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="set-newpass">Nova Senha</label>
+            <input
+              id="set-newpass"
+              type="password"
+              placeholder="Mínimo 6 caracteres"
+              [value]="newPassword()"
+              (input)="newPassword.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="set-confpass">Confirmar Nova Senha</label>
+            <input
+              id="set-confpass"
+              type="password"
+              placeholder="Digite a nova senha novamente"
+              [value]="confirmPassword()"
+              (input)="confirmPassword.set($any($event.target).value)"
+              required
+            />
+          </div>
+
+          <div class="actions-row">
+            <button type="submit" class="btn-save" [disabled]="!newPassword() || isSaving()">
+              <i class="fa-solid fa-key"></i>
+              <span>Atualizar Senha</span>
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- ABA 3: PREFERÊNCIAS DE CATÁLOGO -->
+      @if (activeTab() === 'preferences') {
+        <div class="settings-form">
+          <div class="section-title">
+            <h2>Países de Preferência</h2>
+            <p>Selecione as produções asiáticas que você prefere priorizar nas recomendações</p>
+          </div>
+
+          <div class="countries-tags">
+            @for (country of availableCountries; track country.code) {
+              <button
+                type="button"
+                class="country-btn"
+                [class.selected]="selectedCountries().includes(country.code)"
+                (click)="toggleCountry(country.code)"
+              >
+                <i
+                  class="fa-solid fa-check"
+                  [style.visibility]="
+                    selectedCountries().includes(country.code) ? 'visible' : 'hidden'
+                  "
+                ></i>
+                <span>{{ country.label }}</span>
+              </button>
+            }
+          </div>
+
+          <div class="actions-row">
+            <button
+              type="button"
+              class="btn-save"
+              (click)="onSaveProfile()"
+              [disabled]="isSaving()"
+            >
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>Salvar Preferências</span>
+            </button>
+          </div>
+        </div>
+      }
+    </section>
+  </div>
+</div>
+
+@if (selectedFileForCrop(); as file) {
+  <app-avatar-cropper
+    [imageFile]="file"
+    (cropConfirmed)="uploadCroppedAvatar($event)"
+    (cropCancelled)="cancelCrop()"
+  ></app-avatar-cropper>
+}

@@ -1,0 +1,113 @@
+<div class="dashboard-container">
+  
+  <!-- Banner do Perfil -->
+  <header class="profile-banner">
+    <div class="profile-main">
+      <div class="avatar-wrapper">
+        <div class="avatar-default">
+          <i class="fa-solid fa-user-astronaut"></i>
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div class="name-row">
+          <h1>{{ authService.currentProfile()?.username || 'Dorameiro(a)' }}</h1>
+          <span class="profile-tag">{{ authService.currentProfile()?.profile_code || '#OPPA-USER' }}</span>
+        </div>
+        <p class="member-since">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Membro desde {{ (authService.currentProfile()?.created_at | date: 'MMM yyyy') || '2026' }}</span>
+          <span class="dot">•</span>
+          <span>{{ authService.currentProfile()?.email }}</span>
+        </p>
+      </div>
+    </div>
+
+    <button type="button" class="btn-logout" (click)="logout()" title="Encerrar sessão">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Sair</span>
+    </button>
+  </header>
+
+  <!-- Cards de Métricas do Usuário -->
+  <section class="user-stats-grid">
+    <div class="stat-card">
+      <div class="icon-wrap watch"><i class="fa-solid fa-circle-play"></i></div>
+      <div class="stat-info">
+        <span class="num">{{ stats().watching }}</span>
+        <span class="lbl">Assistindo Agora</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-wrap done"><i class="fa-solid fa-check-double"></i></div>
+      <div class="stat-info">
+        <span class="num">{{ stats().completed }}</span>
+        <span class="lbl">Dramas Finalizados</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-wrap fav"><i class="fa-solid fa-heart"></i></div>
+      <div class="stat-info">
+        <span class="num">{{ stats().favorites }}</span>
+        <span class="lbl">Favoritos</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="icon-wrap eps"><i class="fa-solid fa-tv"></i></div>
+      <div class="stat-info">
+        <span class="num">{{ stats().episodesWatched }}</span>
+        <span class="lbl">Episódios Totais</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navegação de Listas do Usuário -->
+  <div class="tabs-nav">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'watching'"
+      (click)="setTab('watching')"
+    >
+      <i class="fa-solid fa-play"></i>
+      <span>Em Andamento ({{ stats().watching }})</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'completed'"
+      (click)="setTab('completed')"
+    >
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Concluídos ({{ stats().completed }})</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'favorites'"
+      (click)="setTab('favorites')"
+    >
+      <i class="fa-solid fa-heart"></i>
+      <span>Favoritos ({{ stats().favorites }})</span>
+    </button>
+  </div>
+
+  <!-- Conteúdo da Lista -->
+  <section class="tab-content">
+    <div class="empty-list">
+      <i class="fa-solid fa-clapperboard"></i>
+      <h3>Sua lista está pronta para ser preenchida</h3>
+      <p>Navegue pelo catálogo de doramas e adicione produções para acompanhar seu progresso.</p>
+      <a routerLink="/dramas" class="btn-explore">
+        <i class="fa-solid fa-compass"></i>
+        <span>Explorar Doramas</span>
+      </a>
+    </div>
+  </section>
+
+</div>

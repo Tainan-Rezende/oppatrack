@@ -1,92 +1,246 @@
-<!-- Greetings -->
 <section class="greetings">
   <div class="header-info">
     <div class="comunity">
       <div class="circle"></div>
-      <div class="active">10 Dorameiros ativos agora.</div>
+      <div class="active">Comunidade Ativa</div>
     </div>
 
-    <div class="update">
-      <i class="fa-solid fa-rotate-right"></i>
-      <div>Atualizado agora</div>
+    <div class="update" (click)="loadHomeData()" title="Clique para recarregar">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="isLoading()"></i>
+      <div>{{ isLoading() ? 'Atualizando...' : timeAgoText() }}</div>
     </div>
   </div>
 </section>
 
-<!-- HOT DRAMAS -->
-<section>
-  <div class="info-text">
-    <i class="fa-solid fa-fire"></i>
-    <div>TOP 3 MAIS ASSISTIDOS</div>
+@if (isLoading()) {
+  <div class="loading-state">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <span>Carregando universo OppaTrack...</span>
   </div>
+} @else {
+  @if (heroDrama(); as hero) {
+    <section
+      class="hero-banner"
+      [style.background-image]="hero.backdropUrl ? 'url(' + hero.backdropUrl + ')' : 'none'"
+    >
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fa-solid fa-fire"></i>
+            <span>Destaque da Semana</span>
+          </div>
 
-  <div class="hot-dramas-grid">
-    <ng-container *ngFor="let drama of featuredDrama; let i = index">
-      <div class="item-drama">
-        <div class="drama-card">
+          <h1 class="hero-title">{{ hero.title }}</h1>
+
+          <div class="hero-meta">
+            @if (hero.rating) {
+              <span class="badge rating">
+                <i class="fa-solid fa-star"></i>
+                {{ hero.rating | number: '1.1-1' }}
+              </span>
+            }
+            @if (hero.releaseDate) {
+              <span class="meta-item">
+                <i class="fa-solid fa-calendar"></i>
+                {{ hero.releaseDate | date: 'yyyy' }}
+              </span>
+            }
+            @if (hero.country) {
+              <span class="meta-item">• {{ hero.country }}</span>
+            }
+            @if (hero.genres && hero.genres.length > 0) {
+              <span class="meta-item genres">• {{ hero.genres.slice(0, 2).join(' / ') }}</span>
+            }
+          </div>
+
+          @if (hero.synopsis) {
+            <p class="hero-synopsis">{{ hero.synopsis }}</p>
+          }
+
+          <div class="hero-actions">
+            <a [routerLink]="['/dramas', hero.id]" class="btn btn-primary">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>Ver Detalhes</span>
+            </a>
+            <a routerLink="/dramas" class="btn btn-secondary">
+              <i class="fa-solid fa-compass"></i>
+              <span>Explorar Catálogo</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Pílulas de Categorias -->
+  <section class="section-container categories-section">
+    <div class="categories-list">
+      @for (cat of categories; track cat.name) {
+        <a
+          [routerLink]="['/dramas']"
+          [queryParams]="{
+            genre: cat.genre || null,
+            keyword: cat.keyword || null,
+            label: cat.name,
+          }"
+          class="category-pill"
+        >
+          <i [class]="cat.icon"></i>
+          <span>{{ cat.name }}</span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Top 3 Mais Populares -->
+  <section class="section-container">
+    <div class="info-text">
+      <i class="fa-solid fa-ranking-star"></i>
+      <span>Top 3 Mais Populares</span>
+    </div>
+
+    <div class="hot-dramas-grid">
+      @for (drama of featuredDramas(); track drama.id; let i = $index) {
+        <a class="item-drama" [routerLink]="['/dramas', drama.id]">
           <div
             class="drama-image"
             [style.--backdrop]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'"
             [style.--poster]="'url(' + drama.posterUrl + ')'"
           >
-            <div class="drama-i">
-              <i class="fa-solid fa-fire" *ngIf="i === 0" style="color: red"></i> #{{ i + 1 }}
+            <div class="drama-i" [class.gold]="i === 0">
+              @if (i === 0) {
+                <i class="fa-solid fa-crown"></i>
+              }
+              <span>#{{ i + 1 }}</span>
             </div>
+
             <div class="drama-data">
               <div class="data">
-                <div>
-                  <i class="fa-solid fa-tv"></i> <b>{{ drama.title }}</b>
+                <b class="title" [title]="drama.title">{{ drama.title }}</b>
+                <div class="meta-row">
+                  <span class="badge rating">
+                    <i class="fa-solid fa-star"></i>
+                    {{ drama.rating | number: '1.1-1' }}
+                  </span>
+                  @if (drama.releaseDate) {
+                    <span class="year">
+                      <i class="fa-solid fa-calendar"></i>
+                      {{ drama.releaseDate | date: 'yyyy' }}
+                    </span>
+                  }
+                  @if (drama.country) {
+                    <span class="country">• {{ drama.country }}</span>
+                  }
                 </div>
-                <div><i class="fa-solid fa-star"></i> {{ drama.rating }} / 10</div>
-                <div><i class="fa-solid fa-calendar"></i> {{ drama.releaseDate }}</div>
               </div>
             </div>
           </div>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- Em Exibição Recente -->
+  @if (onAirDramas().length > 0) {
+    <section class="section-container">
+      <div class="section-header-row">
+        <div class="info-text">
+          <i class="fa-solid fa-tower-broadcast"></i>
+          <span>Em Exibição Recente</span>
         </div>
+        <a routerLink="/dramas" class="see-all"
+          >Ver todos <i class="fa-solid fa-chevron-right"></i
+        ></a>
       </div>
-    </ng-container>
-  </div>
-</section>
 
-<!-- Statistic -->
-<section>
-  <div class="info-text">MÉTRICAS GERAIS</div>
+      <div class="dramas-row-grid">
+        @for (drama of onAirDramas(); track drama.id) {
+          <app-drama-card [drama]="drama" />
+        }
+      </div>
+    </section>
+  }
 
-  <div class="statistic">
-    <!-- Global Stats -->
+  <!-- Clássicos Mais Bem Avaliados -->
+  @if (topRatedDramas().length > 0) {
+    <section class="section-container">
+      <div class="section-header-row">
+        <div class="info-text">
+          <i class="fa-solid fa-award"></i>
+          <span>Clássicos Mais Bem Avaliados</span>
+        </div>
+        <a routerLink="/dramas" class="see-all"
+          >Ver todos <i class="fa-solid fa-chevron-right"></i
+        ></a>
+      </div>
+
+      <div class="dramas-row-grid">
+        @for (drama of topRatedDramas(); track drama.id) {
+          <app-drama-card [drama]="drama" />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Métricas Gerais -->
+  <section class="section-container">
+    <div class="info-text">
+      <i class="fa-solid fa-chart-simple"></i>
+      <span>Métricas Gerais</span>
+    </div>
+
     <div class="global-stats">
-      <ng-container *ngFor="let metric of metrics">
+      @for (metric of metrics(); track metric.id) {
         <div class="card-stats">
           <div class="title">
-            <i [class]="metric.icon"></i> <span>{{ metric.title }}</span>
+            <i [class]="metric.icon"></i>
+            <span>{{ metric.title }}</span>
           </div>
           <div class="value">
-            <span *ngIf="metric.isHighlight"
-              ><i class="fa-solid fa-star" style="color: yellow"></i></span
-            >{{ metric.value }}
+            @if (metric.isHighlight) {
+              <i class="fa-solid fa-star star-highlight"></i>
+            }
+            <span>{{ metric.value }}</span>
           </div>
           <div class="subtitle">{{ metric.subtitle }}</div>
         </div>
-      </ng-container>
+      }
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- HOT ACTORS -->
-<section>
-  <div class="info-text">Atores / Atrizes em alta</div>
-  <div class="hot-actors">
-    <ng-container *ngFor="let actor of hotActors; let i = index">
-      <div class="item-actor">
-        <div class="actor-card">
-          <div class="actor-image" [style.background-image]="'url(' + actor.photoUrl + ')'">
-            <div class="actor-i">
-              <i class="fa-solid fa-fire" *ngIf="i <= 2" style="color: red"></i>#{{ i + 1 }}
+  <!-- Atores / Atrizes em Alta -->
+  <section class="section-container">
+    <div class="info-text">
+      <i class="fa-solid fa-users"></i>
+      <span>Atores / Atrizes em Alta</span>
+    </div>
+
+    <div class="hot-actors">
+      @for (actor of hotActors(); track actor.id; let i = $index) {
+        <a class="item-actor" [routerLink]="['/actors', actor.id]">
+          <div class="actor-image" [style.background-image]="'url(' + actor.profileUrl + ')'">
+            <div class="actor-badge" [class.top]="i <= 2">
+              @if (i <= 2) {
+                <i class="fa-solid fa-fire"></i>
+              }
+              <span>#{{ i + 1 }}</span>
             </div>
-            <div class="actor-name"><i class="fa-solid fa-masks-theater"></i> {{ actor.name }}</div>
+
+            <div class="actor-overlay">
+              <div class="actor-name" [title]="actor.name">
+                <i class="fa-solid fa-masks-theater"></i>
+                <span>{{ actor.name }}</span>
+              </div>
+
+              @if (actor.knownFor) {
+                <span class="actor-known" [title]="actor.knownFor">
+                  {{ actor.knownFor }}
+                </span>
+              }
+            </div>
           </div>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-</section>
+        </a>
+      }
+    </div>
+  </section>
+}

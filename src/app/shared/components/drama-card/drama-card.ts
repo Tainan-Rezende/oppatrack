@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Drama } from '../../../models/home.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Drama } from '../../../models/drama.model';
 
 @Component({
   selector: 'app-drama-card',
@@ -10,5 +10,5 @@ import { RouterLink } from '@angular/router';
   styleUrl: './drama-card.scss',
 })
 export class DramaCard {
-  @Input({required: true}) public drama!: Drama
+  @Input({ required: true }) public drama!: Drama;
 }

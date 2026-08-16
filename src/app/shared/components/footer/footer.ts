@@ -1,15 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
-  imports: [],
+  imports: [CommonModule, RouterLink],
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
 export class Footer {
-  public currentYear: number;
-
-  constructor() {
-    this.currentYear = new Date().getFullYear();
-  }
+  public currentYear = signal<number>(new Date().getFullYear());
 }

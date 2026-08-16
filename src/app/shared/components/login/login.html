@@ -1,19 +1,266 @@
-<div class="modal-box" (click)="close()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <h1>Entrar</h1>
-        <p class="subtitle">
-            Envie <span class="command">/webtoken</span> para o bot para obter seu código.
-        </p>
+<div class="modal-backdrop" [class.closing]="isClosing()" (click)="close()">
+  <div class="modal-card" [class.closing]="isClosing()" (click)="$event.stopPropagation()">
+    
+    <!-- Botão Fechar -->
+    <button type="button" class="btn-close" (click)="close()" aria-label="Fechar modal">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
 
-        <div class="input-token">
-            <label for="token">CÓDIGO DE 8 DÍGITOS</label>
-            <div class="input-field">
-                <input id="token" type="text" inputmode="numeric" placeholder="• • • • • • • •" maxlength="8" autocomplete="off" (input)="onTokenInput($event)" [value]="token" />
+    <!-- ==================== VIEW 1: LOGIN ==================== -->
+    @if (currentView() === 'login') {
+      <div class="view-content">
+        <div class="modal-header">
+          <div class="header-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h2>Entrar no OppaTrack</h2>
+          <p class="subtitle">Acesse suas listas, notas e episódios salvos</p>
+        </div>
+
+        <form class="auth-form" (submit)="$event.preventDefault(); onSubmitLogin()">
+          
+          <div class="field-group">
+            <label for="login-identifier">Código de Perfil ou E-mail</label>
+            <div class="input-container">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input
+                id="login-identifier"
+                type="text"
+                placeholder="Ex: #OPPA-4820 ou seu@email.com"
+                autocomplete="username"
+                [value]="identifier()"
+                (input)="identifier.set($any($event.target).value)"
+                autofocus
+                required
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="label-row">
+              <label for="login-password">Senha de Acesso</label>
+              <button type="button" class="link-forgot" (click)="switchView('recover')">
+                Esqueceu a senha?
+              </button>
             </div>
 
-            <button class="btn-submit" [disabled]="token.length !== 8">
-                Entrar <i class="fa-solid fa-arrow-right"></i>
-            </button>
+            <div class="input-container">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input
+                id="login-password"
+                [type]="showPassword() ? 'text' : 'password'"
+                placeholder="Digite sua senha (mín. 6 dígitos)"
+                autocomplete="current-password"
+                [value]="password()"
+                (input)="password.set($any($event.target).value)"
+                required
+              />
+              <button type="button" class="btn-toggle-eye" (click)="togglePasswordVisibility()" title="Exibir/Ocultar senha">
+                <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="!identifier().trim() || password().length < 6 || isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Entrando...</span>
+            } @else {
+              <span>Entrar na Conta</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            }
+          </button>
+        </form>
+
+        <div class="modal-footer">
+          <span>Não tem um perfil?</span>
+          <button type="button" class="link-action" (click)="switchView('register')">
+            Criar perfil agora
+          </button>
         </div>
+      </div>
+    }
+
+    <!-- ==================== VIEW 2: CADASTRO ==================== -->
+    @if (currentView() === 'register') {
+      <div class="view-content">
+        @if (registeredProfileCode(); as code) {
+          <div class="success-box">
+            <div class="success-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2>Perfil Criado!</h2>
+            <p class="subtitle">Guarde o seu código de perfil único:</p>
+            
+            <div class="code-badge">
+              <span>{{ code }}</span>
+            </div>
+
+            <p class="desc-info">
+              Você pode usar este código ou seu e-mail junto à sua senha para entrar quando quiser.
+            </p>
+
+            <button type="button" class="btn-submit" (click)="switchView('login')">
+              Fazer Login com meu Código
+            </button>
+          </div>
+        } @else {
+          <div class="modal-header">
+            <div class="header-icon">
+              <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2>Criar Perfil</h2>
+            <p class="subtitle">Configure seu perfil rápido em menos de 1 minuto</p>
+          </div>
+
+          <form class="auth-form" (submit)="$event.preventDefault(); onSubmitRegister()">
+            
+            <div class="field-group">
+              <label for="reg-name">Nome ou Apelido</label>
+              <div class="input-container">
+                <i class="fa-solid fa-signature input-icon"></i>
+                <input
+                  id="reg-name"
+                  type="text"
+                  placeholder="Ex: Min-ho ou DoramaLover"
+                  [value]="regName()"
+                  (input)="regName.set($any($event.target).value)"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="reg-email">E-mail para Recuperação</label>
+              <div class="input-container">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input
+                  id="reg-email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  autocomplete="email"
+                  [value]="regEmail()"
+                  (input)="regEmail.set($any($event.target).value)"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="reg-password">Crie uma Senha (mínimo 6 caracteres)</label>
+              <div class="input-container">
+                <i class="fa-solid fa-key input-icon"></i>
+                <input
+                  id="reg-password"
+                  [type]="showPassword() ? 'text' : 'password'"
+                  placeholder="••••••••"
+                  minlength="6"
+                  autocomplete="new-password"
+                  [value]="regPassword()"
+                  (input)="regPassword.set($any($event.target).value)"
+                  required
+                />
+                <button type="button" class="btn-toggle-eye" (click)="togglePasswordVisibility()">
+                  <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="!regName().trim() || !regEmail().trim() || regPassword().length < 6 || isSubmitting()"
+            >
+              @if (isSubmitting()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Gerando perfil...</span>
+              } @else {
+                <span>Gerar Perfil & Entrar</span>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              }
+            </button>
+          </form>
+
+          <div class="modal-footer">
+            <span>Já possui cadastro?</span>
+            <button type="button" class="link-action" (click)="switchView('login')">
+              Fazer login
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ==================== VIEW 3: RECUPERAÇÃO ==================== -->
+    @if (currentView() === 'recover') {
+      <div class="view-content">
+        @if (recoverySuccess()) {
+          <div class="success-box">
+            <div class="success-icon">
+              <i class="fa-solid fa-envelope-circle-check"></i>
+            </div>
+            <h2>E-mail Enviado!</h2>
+            <p class="desc-info">
+              Enviamos as instruções e o link de redefinição de senha para <b>{{ recoverEmail() }}</b>.
+            </p>
+            <button type="button" class="btn-submit" (click)="switchView('login')">
+              Voltar para o Login
+            </button>
+          </div>
+        } @else {
+          <div class="modal-header">
+            <div class="header-icon">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <h2>Recuperar Senha</h2>
+            <p class="subtitle">Informe seu e-mail cadastrado para redefinir o acesso à sua conta</p>
+          </div>
+
+          <form class="auth-form" (submit)="$event.preventDefault(); onSubmitRecover()">
+            
+            <div class="field-group">
+              <label for="rec-email">E-mail Cadastrado</label>
+              <div class="input-container">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input
+                  id="rec-email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  [value]="recoverEmail()"
+                  (input)="recoverEmail.set($any($event.target).value)"
+                  autofocus
+                  required
+                />
+              </div>
+            </div>
+
+          <button
+            type="submit"
+            class="btn-submit"
+            [disabled]="!recoverEmail().trim() || isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Enviando instruções...</span>
+            } @else {
+              <span>Enviar Link de Recuperação</span>
+              <i class="fa-solid fa-paper-plane"></i>
+            }
+          </button>
+        </form>
+
+        <div class="modal-footer">
+          <button type="button" class="link-action" (click)="switchView('login')">
+            <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
+          </button>
+        </div>
+      }
     </div>
+  }
+
+  </div>
 </div>

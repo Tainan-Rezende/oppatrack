@@ -1,34 +1,135 @@
 :host {
-    display: block;
-    padding: 2rem 1rem;;
-    // max-width: 1280px;
-    margin: 0 auto;
-    width: 100%;
+  display: block;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .catalog-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+
+  .catalog-header {
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.25rem 0;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    position: relative;
+    max-width: 580px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.5rem;
+    padding: 0 1rem;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+
+    &:focus-within {
+      border-color: rgba(255, 77, 77, 0.5);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .search-icon {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.9rem;
+      margin-right: 0.75rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.875rem;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+
+  .loading-wrapper,
+  .empty-state {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 5rem 0;
+    color: rgba(255, 255, 255, 0.5);
 
-    .catalog-header {
-        h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #fff;
-            margin: 0 0 0.25rem 0;
-        }
-
-        p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.875rem;
-            margin: 0;
-        }
+    i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: rgba(255, 255, 255, 0.3);
     }
 
-    .dramas-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 1rem;
+    h3 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin: 0;
     }
+
+    p {
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  }
+
+  .loading-wrapper i {
+    color: #ff4d4d;
+    font-size: 1.5rem;
+  }
+
+  .dramas-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); // 5 colunas x 4 linhas = 20 itens perfeitos
+    gap: 1.25rem;
+    width: 100%;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: repeat(4, 1fr); // 4 colunas x 5 linhas = 20 itens
+    }
+
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr); // 2 colunas x 10 linhas = 20 itens
+      gap: 0.85rem;
+    }
+
+    @media (max-width: 500px) {
+      grid-template-columns: repeat(1, 1fr); // 1 coluna x 20 linhas = 20 itens
+      gap: .5rem;
+    }
+  }
 }

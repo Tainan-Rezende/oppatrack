@@ -1,0 +1,47 @@
+<section class="catalog-container">
+  <div class="catalog-header">
+    <h1>Catálogo de Atores</h1>
+    <p>Conheça os atores e atrizes das suas produções favoritas</p>
+  </div>
+
+  <!-- 🔍 Barra de Busca -->
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input
+      type="text"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearch($event)"
+      placeholder="Buscar ator por nome ou nome original..."
+    />
+    @if (searchTerm()) {
+      <button class="clear-btn" (click)="clearSearch()" title="Limpar busca">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-wrapper">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      <span>Buscando artistas...</span>
+    </div>
+  } @else if (actorList().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-user-slash"></i>
+      <h3>Nenhum ator encontrado</h3>
+      <p>Tente buscar por outro termo ou limpe os filtros.</p>
+    </div>
+  } @else {
+    <div class="actors-grid">
+      @for (actor of actorList(); track actor.id) {
+        <app-actor-card [actor]="actor" />
+      }
+    </div>
+
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (pageChange)="onPageChange($event)"
+    />
+  }
+</section>

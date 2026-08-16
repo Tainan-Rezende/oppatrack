@@ -1,0 +1,45 @@
+@if (totalPages > 1) {
+  <nav class="pagination-wrapper">
+    <!-- Botão Anterior -->
+    <button
+      type="button"
+      class="nav-btn"
+      [disabled]="currentPage === 1"
+      (click)="prevPage()"
+      title="Página anterior"
+    >
+      <i class="fa-solid fa-chevron-left"></i>
+      <span>Anterior</span>
+    </button>
+
+    <!-- Pílulas de Páginas -->
+    <div class="pages-list">
+      @for (page of pages(); track $index) {
+        @if (page === '...') {
+          <span class="dots">...</span>
+        } @else {
+          <button
+            type="button"
+            class="page-btn"
+            [class.active]="page === currentPage"
+            (click)="selectPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+      }
+    </div>
+
+    <!-- Botão Próximo -->
+    <button
+      type="button"
+      class="nav-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="nextPage()"
+      title="Próxima página"
+    >
+      <span>Próximo</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </nav>
+}

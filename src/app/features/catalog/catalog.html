@@ -1,12 +1,46 @@
 <section class="catalog-container">
-    <div class="catalog-header">
-        <h1>Catálogo de Dramas</h1>
-        <p>Explore todos os doramas disponíveis na plataforma</p>
+  <div class="catalog-header">
+    <h1>Catálogo de Dramas</h1>
+    <p>Explore produções asiáticas, acompanhe episódios e gerencie sua lista</p>
+  </div>
+
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input
+      type="text"
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearch($event)"
+      placeholder="Buscar por título em português, original ou inglês..."
+    />
+    @if (searchTerm()) {
+      <button class="clear-btn" (click)="clearSearch()" title="Limpar busca">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading-wrapper">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      <span>Buscando doramas...</span>
+    </div>
+  } @else if (dramaList().length === 0) {
+    <div class="empty-state">
+      <i class="fa-solid fa-film"></i>
+      <h3>Nenhum dorama encontrado</h3>
+      <p>Tente buscar por outro termo ou limpe os filtros.</p>
+    </div>
+  } @else {
+    <div class="dramas-grid">
+      @for (drama of dramaList(); track drama.id) {
+        <app-drama-card [drama]="drama" />
+      }
     </div>
 
-    <div class="dramas-grid">
-        @for (drama of dramaList; track drama.id) {
-        <app-drama-card [drama]="drama" />
-        }
-    </div>
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalPages]="totalPages()"
+      (pageChange)="onPageChange($event)"
+    />
+  }
 </section>

@@ -1,210 +1,261 @@
 :host {
-  // Paleta Principal do OppaTrack
-  $bg-dark: #0f0f11;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  padding-bottom: 2.5rem;
+
   $card-bg: #18181c;
-  $card-border: #26262b;
-
-  // Marca & Destaques
-  $primary-red: #e50914;
+  $card-border: rgba(255, 255, 255, 0.08);
   $accent-red: #ff4d4d;
-
-  // Tipografia (Contraste para Leitura)
   $text-primary: #f4f4f6;
   $text-secondary: #a1a1aa;
   $text-muted: #71717a;
 
-  // Section
-  section {
+  .section-container {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.85rem;
+    width: 100%;
   }
 
-  // Titulo de seção
-  .info-text {
-    font-size: 1.25rem;
-    font-weight: 700;
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 6rem 0;
     color: $text-secondary;
-    padding: 0.5rem 0 0 0;
+    i {
+      color: $accent-red;
+      font-size: 2rem;
+    }
+  }
+
+  .info-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $text-primary;
     text-transform: uppercase;
+    letter-spacing: 0.03em;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+
+    i {
+      font-size: 0.95rem;
+      color: $accent-red;
+    }
   }
 
-  // Seção de boas vindas
-  .greetings {
+  .section-header-row {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: space-between;
 
-    & .header-info {
+    .see-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: $accent-red;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  // Cabecalho de Boas-Vindas
+  .greetings {
+    .header-info {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.65rem;
+      font-size: 0.75rem;
 
-      & .comunity {
+      .comunity {
         display: flex;
-        justify-content: center;
         align-items: center;
         gap: 0.5rem;
         background-color: rgba(239, 68, 68, 0.1);
         color: #ef4444;
-        padding: 0.35rem 0.75rem;
-        border-radius: 1rem;
-        opacity: 0.75;
+        padding: 0.35rem 0.85rem;
+        border-radius: 2rem;
         font-weight: 600;
         text-transform: uppercase;
+        border: 1px solid rgba(239, 68, 68, 0.2);
 
         .circle {
-          width: 5px;
-          height: 5px;
+          width: 6px;
+          height: 6px;
           border-radius: 50%;
           background-color: #ef4444;
+          box-shadow: 0 0 6px #ef4444;
         }
       }
 
-      & .update {
+      .update {
         display: flex;
-        justify-content: center;
         align-items: center;
         gap: 0.5rem;
-        background: rgba(30, 30, 30, 0.2);
-        padding: 0.5rem 1.5rem;
-        border-radius: 1.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid $card-border;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
         cursor: pointer;
-        transition: 0.35s ease-in-out;
-        opacity: 0.75;
+        color: $text-secondary;
+        transition: all 0.2s ease;
 
         &:hover {
-          background: rgba(30, 30, 30, 0.35);
-          opacity: 1;
+          background: rgba(255, 255, 255, 0.08);
+          color: #fff;
         }
       }
     }
   }
 
-  .hot-dramas-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+  // 1. Hero Banner Panoramico
+  .hero-banner {
+    width: 100%;
+    min-height: 380px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    position: relative;
+    background-size: cover;
+    background-position: center 20%;
+    border: 1px solid $card-border;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
 
-    @media screen and (max-width: 768px) {
-      grid-template-columns: 1fr;
-    }
-
-    .item-drama {
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(10, 10, 12, 0.95) 0%,
+        rgba(10, 10, 12, 0.8) 45%,
+        rgba(10, 10, 12, 0.3) 80%,
+        transparent 100%
+      );
       display: flex;
-      flex-direction: column;
       align-items: center;
-      border: 1px solid $card-border;
-      border-radius: 0.5rem;
-      overflow: hidden;
+      padding: 2.5rem;
 
-      .drama-card {
-        width: 100%;
-        cursor: pointer;
-        font-size: 0.75rem;
+      @media (max-width: 768px) {
+        padding: 1.5rem;
+        background: linear-gradient(to top, rgba(10, 10, 12, 0.95) 0%, rgba(10, 10, 12, 0.6) 100%);
+      }
 
-        .drama-image {
-          width: 100%;
-          border-radius: 0.5rem;
-          padding: 0.5rem;
-          position: relative;
-          overflow: hidden;
-          aspect-ratio: 2 / 1;
+      .hero-content {
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
 
-          &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: var(--backdrop);
-            background-size: cover;
-            background-position: center 25%;
-            transition: transform 0.35s ease-in-out;
-            z-index: 1;
-          }
+        .hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 0.3rem 0.75rem;
+          border-radius: 2rem;
+          background: rgba($accent-red, 0.15);
+          border: 1px solid rgba($accent-red, 0.4);
+          color: $accent-red;
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          width: fit-content;
+        }
 
-          @media screen and (max-width: 1220px) {
-            aspect-ratio: 2 / 3;
+        .hero-title {
+          font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+          font-weight: 800;
+          color: #fff;
+          margin: 0;
+          line-height: 1.15;
+          letter-spacing: -0.02em;
+        }
 
-            &::before {
-              background-image: var(--poster);
-              background-position: center;
-            }
-          }
+        .hero-meta {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.65rem;
+          font-size: 0.825rem;
+          color: rgba(255, 255, 255, 0.8);
 
-          @media screen and (max-width: 768px) {
-            aspect-ratio: 2 / 1;
-
-            &::before {
-              background-image: var(--backdrop);
-              background-position: center 25%;
-            }
-          }
-
-          &:hover::before {
-            transform: scale(1.08);
-          }
-
-          > * {
-            position: relative;
-            z-index: 2;
-          }
-
-          .drama-i {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            display: flex;
-            justify-content: center;
+          .rating {
+            display: inline-flex;
             align-items: center;
             gap: 0.25rem;
-            padding: 0.25rem 0.65rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            font-weight: 600;
-            border-radius: 0.25rem;
+            color: #facc15;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.3rem;
+            border: 1px solid rgba(250, 204, 21, 0.3);
           }
 
-          .drama-data {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            align-items: flex-end;
-            background: linear-gradient(
-              to top,
-              rgba(0, 0, 0, 0.95) 10%,
-              rgba(0, 0, 0, 0.5) 70%,
-              transparent
-            );
-            padding: 2rem 0.5rem 0.5rem 0.5rem;
-            font-size: 0.875rem;
+          .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+          }
+        }
 
-            .data {
-              display: flex;
-              flex-direction: column;
-              align-items: flex-start;
-              justify-content: center;
-              gap: 0.25rem;
-              width: 100%;
-              text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+        .hero-synopsis {
+          font-size: 0.885rem;
+          line-height: 1.65;
+          color: rgba(255, 255, 255, 0.75);
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
 
-              div {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
+        .hero-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-top: 0.5rem;
+          flex-wrap: wrap;
 
-                b {
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  max-width: 220px;
-                }
+          .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.btn-primary {
+              background: $accent-red;
+              color: #fff;
+              border: 1px solid $accent-red;
+
+              &:hover {
+                background: darken(#ff4d4d, 8%);
+                transform: translateY(-2px);
+              }
+            }
+
+            &.btn-secondary {
+              background: rgba(255, 255, 255, 0.08);
+              border: 1px solid rgba(255, 255, 255, 0.15);
+              color: #fff;
+
+              &:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
               }
             }
           }
@@ -213,216 +264,410 @@
     }
   }
 
-  // Seção de estatisticas
+  // 2. Pilulas de Categorias
+  .categories-section {
+    width: 100%;
+    position: relative;
+    padding: 0.25rem 0;
+
+    .categories-list {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      overflow-x: auto;
+      padding: 0.6rem 0.35rem; // Espaço vertical suficiente para a elevação de -2px
+      margin: -0.35rem 0;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .category-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1.15rem;
+        border-radius: 2rem;
+        background: $card-bg;
+        border: 1px solid $card-border;
+        color: $text-secondary;
+        text-decoration: none;
+        font-size: 0.825rem;
+        font-weight: 600;
+        white-space: nowrap;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+
+        i {
+          color: $accent-red;
+          font-size: 0.8rem;
+        }
+
+        &:hover {
+          background: rgba($accent-red, 0.15);
+          border-color: rgba($accent-red, 0.45);
+          color: #fff;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 14px rgba(255, 77, 77, 0.25);
+        }
+      }
+    }
+  }
+
+  // 3. Top 3 Grid
+  .hot-dramas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+
+    .item-drama {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid $card-border;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      text-decoration: none;
+      background: $card-bg;
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: rgba($accent-red, 0.4);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+        .drama-image::before {
+          transform: scale(1.06);
+        }
+      }
+
+      .drama-image {
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: var(--backdrop);
+          background-size: cover;
+          background-position: center 20%;
+          transition: transform 0.35s ease;
+          z-index: 1;
+        }
+
+        @media (max-width: 1200px) and (min-width: 901px) {
+          aspect-ratio: 4 / 3;
+        }
+
+        > * {
+          position: relative;
+          z-index: 2;
+        }
+
+        .drama-i {
+          align-self: flex-start;
+          margin: 0.75rem;
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(6px);
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.25rem 0.65rem;
+          border-radius: 0.3rem;
+          font-weight: 700;
+          font-size: 0.8rem;
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+
+          &.gold {
+            border-color: rgba(250, 204, 21, 0.4);
+            color: #facc15;
+            i {
+              color: #facc15;
+            }
+          }
+        }
+
+        .drama-data {
+          width: 100%;
+          background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.6) 60%,
+            transparent 100%
+          );
+          padding: 2.5rem 0.85rem 0.85rem 0.85rem;
+
+          .data {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+
+            .title {
+              font-size: 1rem;
+              font-weight: 700;
+              color: #fff;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .meta-row {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              font-size: 0.775rem;
+              color: $text-secondary;
+
+              .rating {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                color: #facc15;
+                font-weight: 600;
+              }
+
+              .country {
+                color: $text-muted;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // 4 e 5. Grades de Doramas (Em Exibicao e Top Rated)
+  .dramas-row-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.85rem;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  // 6. Metricas Gerais
   .global-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    gap: 0.5rem;
+    gap: 0.85rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
 
     .card-stats {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 0.75rem 1rem;
+      padding: 1.1rem 1.25rem;
       border-radius: 0.5rem;
       background: $card-bg;
       border: 1px solid $card-border;
+      gap: 0.25rem;
 
       .title {
         display: flex;
         align-items: center;
-        gap: 0.25rem;
-        font-size: 0.775rem;
+        gap: 0.4rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
+        letter-spacing: 0.05em;
         font-weight: 600;
         color: $accent-red;
 
         i {
           font-size: 0.85rem;
-          width: 14px;
-          text-align: center;
+        }
+      }
+
+      .value {
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0.15rem 0;
+
+        .star-highlight {
+          color: #facc15;
+          font-size: 1.2rem;
         }
       }
 
       .subtitle {
         font-size: 0.75rem;
         color: $text-muted;
-        font-weight: 600;
-      }
-
-      .value {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        font-size: 2rem;
-        font-weight: 700;
-        color: $text-primary;
-
-        i {
-          font-size: 2rem;
-        }
-
-        &.link {
-          cursor: pointer;
-        }
+        font-weight: 500;
       }
     }
   }
 
-  // Hot Actors Section
+  // 7. Atores em Alta
   .hot-actors {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 0.5rem;
+    gap: 0.85rem;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 500px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
 
     .item-actor {
       display: flex;
       flex-direction: column;
-      align-items: center;
       border: 1px solid $card-border;
       border-radius: 0.5rem;
+      overflow: hidden;
+      text-decoration: none;
+      background: $card-bg;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 
-      .actor-card {
+      &:hover {
+        transform: translateY(-4px);
+        border-color: rgba($accent-red, 0.4);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+
+        .actor-image::before {
+          transform: scale(1.06);
+        }
+      }
+
+      .actor-image {
         width: 100%;
-        cursor: pointer;
-        transition: 0.35s ease-in-out;
-        opacity: 0.75;
-        font-size: 0.75rem;
+        aspect-ratio: 2 / 3;
+        position: relative;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center top;
 
-        .actor-image {
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: inherit;
           background-size: cover;
-          background-position: center;
-          width: 100%;
-          aspect-ratio: 3 / 4;
-          border-radius: 0.5rem;
-          padding: 0.5rem;
+          background-position: center top;
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          transition: transform 0.35s ease;
+          z-index: 1;
+        }
+
+        > * {
           position: relative;
-          overflow: hidden;
-
-          &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: inherit;
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.35s ease-in-out;
-            z-index: 1;
-          }
-
-          > * {
-            position: relative;
-            z-index: 2;
-          }
-
-          .actor-i {
-            background: rgba(0, 0, 0, 0.75);
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0.25rem 1rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            border-radius: 0.25rem;
-          }
-
-          .actor-name {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5), transparent);
-            padding: 1rem 0.35rem 0.5rem 0.35rem;
-            font-size: 0.875rem;
-            border-radius: 0 0 0.5rem 0.5rem;
-          }
+          z-index: 2;
         }
 
-        &:hover {
-          opacity: 1;
+        .actor-badge {
+          position: absolute;
+          top: 0.5rem;
+          left: 0.5rem;
+          background: rgba(0, 0, 0, 0.75);
+          backdrop-filter: blur(4px);
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.2rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.1);
 
-          .actor-image::before {
-            transform: scale(1.1);
-          }
-        }
-      }
-    }
-  }
+          &.top {
+            color: $accent-red;
+            border-color: rgba($accent-red, 0.3);
 
-  // Seção de dramas em destaque
-  @media screen and (max-width: 1220px) {
-    .global-stats {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    main {
-      width: 100vw !important;
-      max-width: auto;
-    }
-
-    .hot-actors {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .global-stats {
-      grid-template-columns: repeat(1, 1fr);
-      .card-stats {
-        padding: 0.75rem;
-
-        .title {
-          font-size: 0.65rem;
-        }
-
-        .value {
-          font-size: 1.5rem;
-
-          i {
-            font-size: 1.35rem;
-          }
-        }
-
-        .subtitle {
-          font-size: 0.6rem;
-        }
-      }
-    }
-  }
-
-  @media screen and (max-width: 600px) {
-    .greetings {
-      .header-info {
-        flex-direction: column;
-        gap: 0.5rem;
-
-        & .update {
-          background: rgba(30, 30, 30, 0.5);
-        }
-      }
-    }
-  }
-
-  @media screen and (max-width: 425px) {
-    .hot-dramas-grid {
-      .item-drama {
-        .drama-card {
-          font-size: 0.6rem;
-
-          .drama-data {
-            .data {
-              font-size: 0.75rem;
+            i {
+              color: $accent-red;
             }
           }
         }
+
+        .actor-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.7) 50%,
+            transparent 100%
+          );
+          padding: 2rem 0.65rem 0.65rem 0.65rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+
+          .actor-name {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.825rem;
+            font-weight: 600;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+
+            i {
+              font-size: 0.75rem;
+              color: rgba(255, 255, 255, 0.6);
+              flex-shrink: 0;
+            }
+
+            span {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .actor-known {
+            font-size: 0.7rem;
+            color: $accent-red;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+            line-height: 1.2;
+          }
+        }
       }
-    }
-    .hot-actors {
-      grid-template-columns: repeat(2, 1fr);
     }
   }
 }

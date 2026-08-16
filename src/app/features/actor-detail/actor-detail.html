@@ -1,0 +1,208 @@
+@if (isLoading()) {
+  <div class="loading-container">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <span>Carregando dados do artista...</span>
+  </div>
+} @else if (actor(); as a) {
+  <div class="actor-layout">
+    
+    <!-- 📌 Coluna Esquerda: Sidebar Compacta -->
+    <aside class="sidebar">
+      <div class="photo-card">
+        @if (a.profileUrl) {
+          <img [src]="a.profileUrl" [alt]="a.name" class="main-avatar" />
+        } @else {
+          <div class="no-photo"><i class="fa-solid fa-user"></i></div>
+        }
+      </div>
+
+      <div class="meta-card">
+        <h3>Informações Pessoais</h3>
+
+        <div class="meta-item">
+          <b>Idade:</b>
+          <span>{{ a.age ? a.age + ' anos' : 'Não informada' }}</span>
+        </div>
+
+        @if (a.birthday) {
+          <div class="meta-item">
+            <b>Nascimento:</b>
+            <span>{{ a.birthday | date: 'dd MMMM yyyy' }}</span>
+          </div>
+        }
+
+        @if (a.placeOfBirth) {
+          <div class="meta-item">
+            <b>Local de Origem:</b>
+            <span>{{ a.placeOfBirth }}</span>
+          </div>
+        }
+
+        <div class="meta-item">
+          <b>Gênero:</b>
+          <span>{{ a.gender }}</span>
+        </div>
+
+        <div class="meta-item">
+          <b>Total de Produções:</b>
+          <span class="highlight">{{ a.dramas.length }} doramas</span>
+        </div>
+
+        @if (a.alsoKnownAs && a.alsoKnownAs.length > 0) {
+          <div class="meta-item full">
+            <b>Também conhecido(a) como:</b>
+            <div class="names-tags">
+              @for (name of a.alsoKnownAs; track name) {
+                <span class="name-tag">{{ name }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (a.imdbUrl) {
+          <a [href]="a.imdbUrl" target="_blank" class="imdb-btn">
+            <i class="fa-brands fa-imdb"></i>
+            <span>Ver perfil no IMDb</span>
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+        }
+      </div>
+    </aside>
+
+    <!-- 📖 Coluna Direita: Conteúdo Principal -->
+    <main class="main-content">
+      
+      <!-- Cabeçalho -->
+      <header class="actor-header">
+        <h1 class="name">{{ a.name }}</h1>
+        @if (a.originalName) {
+          <span class="native-name">{{ a.originalName }}</span>
+        }
+      </header>
+
+      <!-- Biografia -->
+      <section class="content-block">
+        <h3 class="section-title">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Biografia</span>
+        </h3>
+
+        @if (a.biography) {
+          <div class="bio-text">
+            {{ a.biography }}
+          </div>
+        } @else {
+          <p class="empty-text">
+            <i class="fa-solid fa-circle-info"></i>
+            Nenhuma biografia em português cadastrada para este artista.
+          </p>
+        }
+      </section>
+
+      <!-- 📸 Galeria de Fotos & Ensaios -->
+      @if (a.photos && a.photos.length > 0) {
+        <section class="content-block">
+          <h3 class="section-title">
+            <i class="fa-solid fa-camera-retro"></i>
+            <span>Fotos & Ensaios ({{ a.photos.length }})</span>
+          </h3>
+
+          <div class="photos-grid">
+            @for (photo of a.photos; track photo; let idx = $index) {
+              <div class="photo-item" (click)="openLightbox(idx)">
+                <img [src]="photo" [alt]="a.name" loading="lazy" />
+                <div class="photo-overlay">
+                  <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- 🎬 Filmografia -->
+      <section class="content-block">
+        <h3 class="section-title">
+          <i class="fa-solid fa-film"></i>
+          <span>Filmografia Principal ({{ a.dramas.length }})</span>
+        </h3>
+
+        @if (a.dramas.length > 0) {
+          <div class="dramas-grid">
+            @for (drama of a.dramas; track drama.id) {
+              <app-drama-card [drama]="drama" />
+            }
+          </div>
+        } @else {
+          <p class="empty-text">Nenhuma produção asiática encontrada.</p>
+        }
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- 🖼️ MODAL / LIGHTBOX DE FOTOS (SLIDE INTERATIVO) -->
+  @if (activePhotoIndex() !== null) {
+    <div class="lightbox-backdrop" (click)="closeLightbox()">
+      <div class="lightbox-container" (click)="$event.stopPropagation()">
+        
+        <!-- Barra de Ações Superior -->
+        <div class="lightbox-header">
+          <span class="photo-counter">
+            {{ activePhotoIndex()! + 1 }} / {{ a.photos.length }}
+          </span>
+
+          <div class="lightbox-actions">
+            <button
+              type="button"
+              class="action-btn"
+              (click)="downloadPhoto(a.photos[activePhotoIndex()!], a.name, $event)"
+              title="Baixar imagem em alta resolução"
+            >
+              <i class="fa-solid fa-download"></i>
+              <span>Baixar</span>
+            </button>
+
+            <button
+              type="button"
+              class="action-btn close"
+              (click)="closeLightbox()"
+              title="Fechar (Esc)"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Área Central da Imagem com Setas -->
+        <div class="lightbox-body">
+          <button
+            type="button"
+            class="slide-arrow prev"
+            [disabled]="activePhotoIndex() === 0"
+            (click)="prevPhoto($event)"
+            title="Foto anterior (←)"
+          >
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+
+          <div class="image-wrapper">
+            <img [src]="a.photos[activePhotoIndex()!]" [alt]="a.name" class="modal-img" />
+          </div>
+
+          <button
+            type="button"
+            class="slide-arrow next"
+            [disabled]="activePhotoIndex() === a.photos.length - 1"
+            (click)="nextPhoto($event)"
+            title="Próxima foto (→)"
+          >
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+}

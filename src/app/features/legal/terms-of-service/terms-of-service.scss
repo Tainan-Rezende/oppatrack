@@ -1,0 +1,118 @@
+:host {
+  display: block;
+  width: 100%;
+  padding: 2rem 0 4rem 0;
+
+  $accent-red: #ff4d4d;
+  $card-bg: #141418;
+  $card-border: rgba(255, 255, 255, 0.08);
+  $text-primary: #f4f4f6;
+  $text-secondary: #a1a1aa;
+  $text-muted: #71717a;
+
+  .legal-container {
+    width: 80vw;
+    max-width: 860px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+      width: 92vw;
+    }
+  }
+
+  .legal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    .badge-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba($accent-red, 0.12);
+      border: 1px solid rgba($accent-red, 0.25);
+      color: $accent-red;
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.75rem auto;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+      font-weight: 700;
+      color: #fff;
+      margin: 0 0 0.4rem 0;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: $text-muted;
+      margin: 0;
+    }
+  }
+
+  .legal-card {
+    background: $card-bg;
+    border: 1px solid $card-border;
+    border-radius: 0.75rem;
+    padding: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+
+    @media (max-width: 600px) {
+      padding: 1.5rem 1.15rem;
+    }
+
+    .legal-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+
+      h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: $accent-red;
+          font-size: 0.95rem;
+        }
+      }
+
+      p {
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: $text-secondary;
+        margin: 0;
+
+        strong {
+          color: #fff;
+        }
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+
+        li {
+          font-size: 0.875rem;
+          line-height: 1.6;
+          color: $text-secondary;
+
+          strong {
+            color: $text-primary;
+          }
+        }
+      }
+    }
+  }
+}

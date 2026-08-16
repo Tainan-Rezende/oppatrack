@@ -1,0 +1,41 @@
+<div class="cropper-backdrop" (click)="cancel()">
+  <div class="cropper-card" (click)="$event.stopPropagation()">
+    
+    <div class="cropper-header">
+      <h3>Ajustar Foto de Perfil</h3>
+      <button type="button" class="btn-close" (click)="cancel()" aria-label="Fechar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="cropper-container">
+      <image-cropper
+        [imageFile]="imageFile()"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1 / 1"
+        [roundCropper]="true"
+        [resizeToWidth]="550"
+        [backgroundColor]="'#0c0c0e'"
+        [containWithinAspectRatio]="false"
+        format="webp"
+        (imageCropped)="onImageCropped($event)"
+      ></image-cropper>
+    </div>
+
+    <div class="cropper-footer">
+      <button type="button" class="btn-cancel" (click)="cancel()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn-confirm"
+        [disabled]="!croppedBlob()"
+        (click)="confirmCrop()"
+      >
+        <i class="fa-solid fa-check"></i>
+        <span>Confirmar Recorte</span>
+      </button>
+    </div>
+
+  </div>
+</div>

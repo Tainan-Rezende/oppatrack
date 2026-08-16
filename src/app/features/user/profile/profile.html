@@ -1,0 +1,209 @@
+<div class="profile-container">
+  @if (viewedProfile(); as user) {
+    <!-- Hero / Header do Perfil -->
+    <header class="profile-hero">
+      <div class="hero-content">
+        
+        <div class="avatar-box">
+          @if (user.avatar_url) {
+            <img [src]="user.avatar_url" [alt]="user.username" class="avatar-image" />
+          } @else {
+            <div class="avatar-placeholder">
+              <i class="fa-solid fa-user-astronaut"></i>
+            </div>
+          }
+        </div>
+
+        <div class="user-meta">
+          <div class="name-row">
+            <h1>{{ user.username }}</h1>
+            
+            <button
+              type="button"
+              class="code-badge"
+              (click)="copyToClipboard(user.profile_code, 'code')"
+              title="Clique para copiar o código"
+            >
+              <i class="fa-solid" [class.fa-check]="copiedCode()" [class.fa-hashtag]="!copiedCode()"></i>
+              <span>{{ user.profile_code }}</span>
+              <span class="tooltip">{{ copiedCode() ? 'Copiado!' : 'Copiar' }}</span>
+            </button>
+
+            <!-- Botão de Editar só renderiza se for o perfil do próprio usuário autenticado -->
+            @if (isOwnProfile()) {
+              <a routerLink="/account/settings" class="btn-edit-profile">
+                <i class="fa-solid fa-user-pen"></i>
+                <span>Editar Perfil</span>
+              </a>
+            }
+          </div>
+
+          @if (user.bio) {
+            <p class="user-bio">{{ user.bio }}</p>
+          } @else {
+            <p class="user-bio empty">Nenhuma biografia adicionada ainda.</p>
+          }
+
+          <!-- Redes Sociais & Contatos -->
+          @if (user.social_links) {
+            <div class="social-links-bar">
+              @if (user.social_links.instagram) {
+                <a
+                  [href]="'https://instagram.com/' + user.social_links.instagram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-pill ig"
+                >
+                  <i class="fa-brands fa-instagram"></i>
+                  <span>&#64;{{ user.social_links.instagram }}</span>
+                </a>
+              }
+
+              @if (user.social_links.twitter) {
+                <a
+                  [href]="'https://x.com/' + user.social_links.twitter"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-pill x"
+                >
+                  <i class="fa-brands fa-x-twitter"></i>
+                  <span>&#64;{{ user.social_links.twitter }}</span>
+                </a>
+              }
+
+              @if (user.social_links.telegram) {
+                <a
+                  [href]="'https://t.me/' + user.social_links.telegram"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-pill tg"
+                >
+                  <i class="fa-brands fa-telegram"></i>
+                  <span>&#64;{{ user.social_links.telegram }}</span>
+                </a>
+              }
+
+              @if (user.social_links.tiktok) {
+                <a
+                  [href]="'https://tiktok.com/@' + user.social_links.tiktok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-pill tt"
+                >
+                  <i class="fa-brands fa-tiktok"></i>
+                  <span>&#64;{{ user.social_links.tiktok }}</span>
+                </a>
+              }
+
+              @if (user.social_links.mydramalist) {
+                <a
+                  [href]="'https://mydramalist.com/profile/' + user.social_links.mydramalist"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="social-pill mdl"
+                >
+                  <i class="fa-solid fa-list-check"></i>
+                  <span>MDL</span>
+                </a>
+              }
+
+              @if (user.social_links.discord) {
+                <button
+                  type="button"
+                  class="social-pill dc"
+                  (click)="copyToClipboard(user.social_links.discord, 'discord')"
+                  title="Clique para copiar Discord Tag"
+                >
+                  <i class="fa-brands fa-discord"></i>
+                  <span>{{ user.social_links.discord }}</span>
+                  <span class="pill-tooltip">{{ copiedDiscord() ? 'Copiado!' : 'Copiar' }}</span>
+                </button>
+              }
+            </div>
+          }
+
+          <!-- Países Preferidos -->
+          @if (user.preferred_countries && user.preferred_countries.length > 0) {
+            <div class="preferred-countries">
+              <span class="pref-label">Preferências:</span>
+              <div class="tags-list">
+                @for (c of user.preferred_countries; track c) {
+                  <span class="country-tag">{{ countryLabels[c] || c }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-num">0</span>
+        <span class="stat-lbl"><i class="fa-solid fa-play"></i> Assistindo</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">0</span>
+        <span class="stat-lbl"><i class="fa-solid fa-check"></i> Concluídos</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">0</span>
+        <span class="stat-lbl"><i class="fa-solid fa-bookmark"></i> Quero Ver</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">0</span>
+        <span class="stat-lbl"><i class="fa-solid fa-heart"></i> Favoritos</span>
+      </div>
+    </div>
+
+    <!-- Navegação de Abas do Catálogo -->
+    <section class="profile-content">
+      <div class="profile-tabs">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'watchlist'"
+          (click)="setTab('watchlist')"
+        >
+          <i class="fa-solid fa-clock"></i>
+          <span>Em Andamento</span>
+        </button>
+
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'completed'"
+          (click)="setTab('completed')"
+        >
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Finalizados</span>
+        </button>
+
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'favorites'"
+          (click)="setTab('favorites')"
+        >
+          <i class="fa-solid fa-heart"></i>
+          <span>Favoritos</span>
+        </button>
+      </div>
+
+      <div class="tab-body">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fa-solid fa-film"></i>
+          </div>
+          <h3>Nenhum dorama por aqui ainda</h3>
+          <p>Explore os lançamentos no catálogo e monte a sua lista personalizada.</p>
+          <a routerLink="/dramas" class="btn-explore">
+            <i class="fa-solid fa-compass"></i>
+            <span>Explorar Catálogo</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  }
+</div>

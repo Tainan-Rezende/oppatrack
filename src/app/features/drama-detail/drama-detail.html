@@ -1,88 +1,337 @@
-<header [style]="'background-image: url(' + drama?.backdropUrl +');'">
+@if (isLoading()) {
+  <div class="loading-container">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <span>Carregando detalhes do drama...</span>
+  </div>
+} @else if (drama(); as d) {
+  <!-- Header Panorâmico -->
+  <header [style.background-image]="d.backdropUrl ? 'url(' + d.backdropUrl + ')' : 'none'">
     <div class="fast-info">
-        <div class="name">
-            {{ drama?.title ? drama?.title : '' }}
-        </div>
-        <div class="info">
-            <div *ngIf="drama?.status">
-                @switch(drama?.status) {
-                @case ('ongoing') {
-                <i class="fa-solid fa-tower-broadcast" style="color: #FF4444;"></i>
-                <span>
-                    Em Exibição
-                </span>
-                }
-                @case ('completed') {
-                <i class="fa-solid fa-circle-check" style="color: greenyellow;"></i>
-                <span>
-                    Finalizado
-                </span>
-                }
-                @case ('upcoming') {
-                <i class="fa-solid fa-clock" style="color: #f59e0b;"></i>
-                <span>
-                    Em Breve
-                </span>
-                }
-                @default {}
-                }
-            </div>
-            <div *ngIf="drama?.rating">
-                <i class="fa-solid fa-star" style="color: yellow;"></i>
-                <span>{{ drama?.rating | number:'1.1-1' }} / 10</span>
-            </div>
-            <div *ngIf="drama?.releaseDate">
-                <i class="fa-solid fa-calendar"></i>
-                <span>{{ drama?.releaseDate | date:'dd MMMM yyyy' }}</span>
-            </div>
-            <div *ngIf="drama?.genres">
-                <i class="fa-solid fa-masks-theater"></i>
-                <span>
-                    {{ drama?.genres?.join(', ') }}
-                </span>
-            </div>
-        </div>
-    </div>
-</header>
+      <h1 class="name">{{ d.title }}</h1>
 
-<div class="navigation">
-    <div class="nav-item active">
-        <i class="fa-solid fa-circle-info"></i>
-        <span>Informações</span>
-    </div>
-    <div class="nav-item">
-        <i class="fa-solid fa-users"></i>
-        <span>Elenco</span>
-    </div>
-    <div class="nav-item">
-        <i class="fa-solid fa-camera"></i>
-        <span>Fotos</span>
-    </div>
-</div>
+      <div class="info">
+        @if (d.rating) {
+          <div class="badge rating">
+            <i class="fa-solid fa-star"></i>
+            <span>{{ d.rating | number: '1.1-1' }}</span>
+          </div>
+        }
 
-<div class="container">
-    <div class="info-grid">
-        <div class="main-container">
-            dasdas
+        @if (d.status) {
+          <div class="badge status">
+            @switch (d.status) {
+              @case ('ongoing') {
+                <i class="fa-solid fa-tower-broadcast live"></i>
+                <span>Em Exibição</span>
+              }
+              @case ('completed') {
+                <i class="fa-solid fa-circle-check completed"></i>
+                <span>Finalizado</span>
+              }
+              @case ('upcoming') {
+                <i class="fa-solid fa-clock upcoming"></i>
+                <span>Em Breve</span>
+              }
+            }
+          </div>
+        }
+
+        <span class="dot">•</span>
+
+        @if (d.releaseDate) {
+          <div class="meta-item">
+            <i class="fa-solid fa-calendar"></i>
+            <span>{{ d.releaseDate | date: 'yyyy' }}</span>
+          </div>
+        }
+
+        @if (d.genres && d.genres.length > 0) {
+          <span class="dot">•</span>
+          <div class="meta-item genres">
+            <i class="fa-solid fa-masks-theater"></i>
+            <span>{{ d.genres.join(' • ') }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Navegação de Abas -->
+  <div class="navigation">
+    <div class="nav-item" [class.active]="activeTab() === 'info'" (click)="setTab('info')">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Informações</span>
+    </div>
+    <div class="nav-item" [class.active]="activeTab() === 'cast'" (click)="setTab('cast')">
+      <i class="fa-solid fa-users"></i>
+      <span>Elenco</span>
+    </div>
+    <div class="nav-item" [class.active]="activeTab() === 'photos'" (click)="setTab('photos')">
+      <i class="fa-solid fa-camera"></i>
+      <span>Fotos</span>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container">
+    @if (activeTab() === 'info') {
+      <div class="info-grid">
+        <!-- Coluna 1: Ficha Técnica -->
+        <div class="main-container data-card">
+          <h3 class="section-title">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Dados do Drama</span>
+          </h3>
+
+          <div class="data-drama">
+            @if (d.originalTitle) {
+              <div class="full-width">
+                <b>Título Original:</b>
+                <span [title]="d.originalTitle">{{ d.originalTitle }}</span>
+              </div>
+            }
+
+            @if (d.totalEpisodes) {
+              <div>
+                <b>Episódios:</b>
+                <span>{{ d.totalEpisodes }}</span>
+              </div>
+            }
+
+            @if (d.network) {
+              <div>
+                <b>Emissora:</b>
+                <span>{{ d.network }}</span>
+              </div>
+            }
+
+            @if (d.country) {
+              <div>
+                <b>País:</b>
+                <span>{{ d.country }}</span>
+              </div>
+            }
+
+            @if (d.releaseDate) {
+              <div>
+                <b>Estreia:</b>
+                <span>{{ d.releaseDate | date: 'dd MMM yyyy' }}</span>
+              </div>
+            }
+
+            @if (d.endDate) {
+              <div>
+                <b>Término:</b>
+                <span>{{ d.endDate | date: 'dd MMM yyyy' }}</span>
+              </div>
+            }
+
+            @if (d.ageRating) {
+              <div>
+                <b>Classificação:</b>
+                <span>{{ d.ageRating }}</span>
+              </div>
+            }
+
+            <!-- Onde Assistir -->
+            @if (d.streaming && d.streaming.length > 0) {
+              <div class="watch-section full-width">
+                <b>Onde Assistir:</b>
+                <div class="streaming-list">
+                  @for (platform of d.streaming; track platform.name) {
+                    <a
+                      [href]="platform.url"
+                      target="_blank"
+                      class="streaming-badge"
+                      [title]="'Assistir na ' + platform.name"
+                    >
+                      <img [src]="platform.logo" [alt]="platform.name" />
+                      <span>{{ platform.name }}</span>
+                      <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+          </div>
         </div>
-        <div class="main-container">
-            <div>
 
-            </div>
-            <div>
-                <img [src]="drama?.posterUrl" [alt]="drama?.title" class="poster">
+        <!-- Coluna 2: Pôster, Sinopse e Destaques -->
+        <div class="main-container overview-card">
+          <div class="poster-column">
+            @if (d.posterUrl) {
+              <img [src]="d.posterUrl" [alt]="d.title" class="poster" />
+            }
+          </div>
 
-                <fieldset>
-                    <legend>
-                        Sinopse
-                    </legend>
-                    <div class="synopsis">
-                        {{
-                        drama?.synopsis ? drama?.synopsis : 'Nenhuma sinopse disponível no momento.'
-                        }}
-                    </div>
-                </fieldset>
-            </div>
+          <div class="content-column">
+            @if (d.tagline) {
+              <blockquote class="tagline">“{{ d.tagline }}”</blockquote>
+            }
+
+            <h3 class="section-title">
+              <i class="fa-solid fa-align-left"></i>
+              <span>Sinopse</span>
+            </h3>
+
+            @if (d.synopsis) {
+              <p class="synopsis">{{ d.synopsis }}</p>
+            } @else {
+              <div class="synopsis empty">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Nenhuma sinopse disponível no momento.</span>
+              </div>
+            }
+
+            <!-- Mini-Elenco -->
+            @if (d.castPreview && d.castPreview.length > 0) {
+              <div class="cast-preview-section">
+                <span class="sub-title">Elenco Principal</span>
+                <div class="cast-chips">
+                  @for (actor of d.castPreview; track actor.id) {
+                    <a [routerLink]="['/actors', actor.id]" class="actor-chip">
+                      @if (actor.profileUrl) {
+                        <img [src]="actor.profileUrl" [alt]="actor.name" />
+                      } @else {
+                        <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                      }
+                      <div class="actor-names">
+                        <strong>{{ actor.name }}</strong>
+                        <small>{{ actor.character }}</small>
+                      </div>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+
+            @if (d.creators && d.creators.length > 0) {
+              <div class="creators-row">
+                <span class="sub-title">Criação:</span>
+                <span class="creators-names">{{ d.creators.join(', ') }}</span>
+              </div>
+            }
+          </div>
         </div>
+      </div>
+    }
+
+    <!-- Aba de Elenco Completo -->
+    @if (activeTab() === 'cast') {
+      <div class="main-container">
+        <h3 class="section-title">
+          <i class="fa-solid fa-users"></i>
+          <span>Elenco Completo ({{ d.fullCast?.length || 0 }})</span>
+        </h3>
+
+        @if (d.fullCast && d.fullCast.length > 0) {
+          <div class="full-cast-grid">
+            @for (actor of d.fullCast; track actor.id) {
+              <a [routerLink]="['/actors', actor.id]" class="cast-card-full">
+                @if (actor.profileUrl) {
+                  <img [src]="actor.profileUrl" [alt]="actor.name" class="cast-avatar" />
+                } @else {
+                  <div class="cast-avatar placeholder">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                }
+
+                <div class="cast-details">
+                  <strong class="name" [title]="actor.name">{{ actor.name }}</strong>
+                  <span class="character" [title]="actor.character">{{ actor.character }}</span>
+                </div>
+              </a>
+            }
+          </div>
+        } @else {
+          <p class="empty-tab-text">Nenhuma informação de elenco detalhado disponível.</p>
+        }
+      </div>
+    }
+
+    <!-- Aba de Fotos -->
+    @if (activeTab() === 'photos') {
+      <div class="main-container">
+        <h3 class="section-title">
+          <i class="fa-solid fa-camera"></i>
+          <span>Galeria de Imagens ({{ d.photos?.length || 0 }})</span>
+        </h3>
+
+        @if (d.photos && d.photos.length > 0) {
+          <div class="drama-photos-grid">
+            @for (photo of d.photos; track photo; let idx = $index) {
+              <div class="photo-card-item" (click)="openGallery(idx)">
+                <img [src]="photo" [alt]="d.title" loading="lazy" />
+                <div class="overlay-zoom">
+                  <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-tab-text">Nenhuma imagem adicional encontrada para esta produção.</p>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Modal Lightbox (Tela Cheia) -->
+  @if (selectedPhotoIndex() !== null && d.photos && d.photos.length > 0) {
+    <div class="lightbox-backdrop" (click)="closeGallery()">
+      
+      <!-- Topo: Contador e Botões -->
+      <div class="lightbox-header" (click)="$event.stopPropagation()">
+        <div class="counter">
+          {{ selectedPhotoIndex()! + 1 }} / {{ d.photos.length }}
+        </div>
+
+        <div class="actions">
+          <button
+            type="button"
+            class="action-btn download"
+            (click)="downloadPhoto(d.photos[selectedPhotoIndex()!], $event)"
+            title="Baixar imagem original"
+          >
+            <i class="fa-solid fa-download"></i>
+            <span>Baixar</span>
+          </button>
+
+          <button
+            type="button"
+            class="action-btn close"
+            (click)="closeGallery()"
+            title="Fechar (Esc)"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Seta Esquerda -->
+      <button
+        type="button"
+        class="lightbox-nav-btn prev"
+        (click)="prevPhoto($event)"
+        aria-label="Foto anterior"
+      >
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+
+      <!-- Imagem Central -->
+      <div class="lightbox-image-wrapper" (click)="$event.stopPropagation()">
+        <img [src]="d.photos[selectedPhotoIndex()!]" [alt]="d.title" />
+      </div>
+
+      <!-- Seta Direita -->
+      <button
+        type="button"
+        class="lightbox-nav-btn next"
+        (click)="nextPhoto($event)"
+        aria-label="Próxima foto"
+      >
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
     </div>
-</div>
+  }
+}

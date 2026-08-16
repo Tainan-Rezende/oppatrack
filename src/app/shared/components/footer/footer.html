@@ -1,10 +1,33 @@
-<footer>
-    <main>
-        <div>&copy; {{ currentYear }} Oppa<span style="color: red">Track</span>. All rights reserved.</div>
-        <div class="links">
-            <a href="">Privacy Policy</a>
-            <a href="">Terms of Service</a>
-            <a href="">Contact</a>
-        </div>
-    </main>
+<footer class="footer-wrapper">
+  <div class="footer-container">
+    
+    <!-- Lado Esquerdo: Marca e Informações -->
+    <div class="footer-brand">
+      <a routerLink="/home" class="logo">
+        Oppa<span>Track</span>
+      </a>
+      <p class="copyright">
+        &copy; {{ currentYear() }} OppaTrack. Todos os direitos reservados.
+      </p>
+      <p class="disclaimer">
+        Plataforma informativa para amantes de produções asiáticas. Dados providos por TMDB.
+      </p>
+    </div>
+
+    <!-- Lado Direito: Links Legais e Créditos -->
+    <div class="footer-nav">
+      <div class="legal-links">
+        <a routerLink="/privacy-policy" class="footer-link">Política de Privacidade</a>
+        <span class="dot">•</span>
+        <a routerLink="/terms-of-service" class="footer-link">Termos de Serviço</a>
+        <span class="dot">•</span>
+        <a routerLink="/contact" class="footer-link">Fale Conosco</a>
+      </div>
+
+      <div class="footer-badge">
+        <span>Feito com <i class="fa-solid fa-heart"></i> para dorameiros</span>
+      </div>
+    </div>
+
+  </div>
 </footer>

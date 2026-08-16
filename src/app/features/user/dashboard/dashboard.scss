@@ -1,0 +1,318 @@
+:host {
+  display: block;
+  width: 100%;
+  padding: 1.5rem 0 3rem 0;
+
+  $accent-red: #ff4d4d;
+  $card-bg: #141418;
+  $card-border: rgba(255, 255, 255, 0.08);
+  $text-primary: #f4f4f6;
+  $text-secondary: #a1a1aa;
+  $text-muted: #71717a;
+
+  .dashboard-container {
+    width: 80vw;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    @media (max-width: 900px) {
+      width: 90vw;
+    }
+
+    @media (max-width: 480px) {
+      width: 92vw;
+      gap: 1.25rem;
+    }
+  }
+
+  // Header do Perfil
+  .profile-banner {
+    background: $card-bg;
+    border: 1px solid $card-border;
+    border-radius: 1rem;
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1.25rem;
+    }
+
+    .profile-main {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+
+      .avatar-wrapper {
+        .avatar-default {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: rgba($accent-red, 0.15);
+          border: 2px solid rgba($accent-red, 0.4);
+          color: $accent-red;
+          font-size: 1.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          @media (max-width: 480px) {
+            width: 52px;
+            height: 52px;
+            font-size: 1.4rem;
+          }
+        }
+      }
+
+      .profile-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        .name-row {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.65rem;
+
+          h1 {
+            margin: 0;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            font-weight: 700;
+            color: #fff;
+          }
+
+          .profile-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: $accent-red;
+            background: rgba($accent-red, 0.12);
+            border: 1px solid rgba($accent-red, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 2rem;
+          }
+        }
+
+        .member-since {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.45rem;
+          margin: 0;
+          font-size: 0.8rem;
+          color: $text-muted;
+
+          i {
+            color: $accent-red;
+            font-size: 0.75rem;
+          }
+
+          .dot {
+            color: rgba(255, 255, 255, 0.2);
+          }
+        }
+      }
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 1.15rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid $card-border;
+      color: $text-secondary;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba($accent-red, 0.15);
+        border-color: rgba($accent-red, 0.4);
+        color: #fff;
+      }
+    }
+  }
+
+  // Grid de Métricas
+  .user-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+    }
+
+    .stat-card {
+      background: $card-bg;
+      border: 1px solid $card-border;
+      border-radius: 0.75rem;
+      padding: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+
+        &.watch {
+          background: rgba(59, 130, 246, 0.15);
+          color: #60a5fa;
+        }
+
+        &.done {
+          background: rgba(34, 197, 94, 0.15);
+          color: #4ade80;
+        }
+
+        &.fav {
+          background: rgba($accent-red, 0.15);
+          color: $accent-red;
+        }
+
+        &.eps {
+          background: rgba(168, 85, 247, 0.15);
+          color: #c084fc;
+        }
+      }
+
+      .stat-info {
+        display: flex;
+        flex-direction: column;
+
+        .num {
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: #fff;
+        }
+
+        .lbl {
+          font-size: 0.75rem;
+          color: $text-secondary;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  // Abas de Listas
+  .tabs-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid $card-border;
+    padding-bottom: 0.75rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.5rem 1.15rem;
+      border-radius: 2rem;
+      background: transparent;
+      border: 1px solid transparent;
+      color: $text-muted;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: $text-primary;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      &.active {
+        color: #fff;
+        background: rgba($accent-red, 0.15);
+        border-color: rgba($accent-red, 0.4);
+
+        i {
+          color: $accent-red;
+        }
+      }
+    }
+  }
+
+  // Conteúdo da Lista
+  .tab-content {
+    .empty-list {
+      background: $card-bg;
+      border: 1px solid $card-border;
+      border-radius: 0.75rem;
+      padding: 4rem 1.5rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
+
+      i {
+        font-size: 3rem;
+        color: rgba(255, 255, 255, 0.15);
+        margin-bottom: 0.5rem;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #fff;
+      }
+
+      p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.85rem;
+        color: $text-muted;
+        max-width: 400px;
+        line-height: 1.6;
+      }
+
+      .btn-explore {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.6rem 1.25rem;
+        border-radius: 0.5rem;
+        background: $accent-red;
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.825rem;
+        font-weight: 600;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: #e63e3e;
+        }
+      }
+    }
+  }
+}

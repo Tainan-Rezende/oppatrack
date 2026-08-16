@@ -1,84 +1,414 @@
-<nav>
-    <main>
+<!-- Barra de Navegacao Fixa -->
+<nav class="navbar-wrapper">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <a routerLink="/home" class="logo"> Oppa<span>Track</span> </a>
 
-        <div class="navbar">
-            <div class="logo">
-                Oppa<span style="color: red;">Track</span>
-            </div>
+    <!-- Menu Desktop -->
+    <div class="nav-links">
+      @for (menu of menuList; track menu.route) {
+        <a
+          class="nav-link"
+          [routerLink]="menu.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: menu.exact || false }"
+        >
+          <i [class]="menu.icon"></i>
+          <span>{{ menu.label }}</span>
+        </a>
+      }
+    </div>
 
-            <div class="nav-middle">
-                <div class="menu">
-                    @for (menu of menuList; track menu.route) {
-                    <div class="item" [routerLink]="menu.route" routerLinkActive="active"
-                        [routerLinkActiveOptions]="{ exact: menu.exact || false }">
-                        <i [class]="menu.icon"></i>
-                        <div>{{ menu.label }}</div>
-                    </div>
-                    }
+    <!-- Acoes Desktop -->
+    <div class="nav-actions">
+      <!-- Caixa de Busca -->
+      <div class="search-box-container">
+        <form
+          class="search-form"
+          (submit)="$event.preventDefault(); onHeaderSearch(headerSearch.value)"
+        >
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            #headerSearch
+            type="text"
+            placeholder="Buscar doramas, atores..."
+            autocomplete="off"
+            (input)="onSearchInput(headerSearch.value)"
+            (focus)="headerSearch.value.trim().length >= 2 && showDropdown.set(true)"
+          />
+          @if (isSearching()) {
+            <i class="fa-solid fa-circle-notch fa-spin search-loading"></i>
+          }
+        </form>
+
+        <!-- Dropdown de Busca -->
+        @if (showDropdown()) {
+          <div class="search-dropdown">
+            @if (isSearching()) {
+              <div class="dropdown-status">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Buscando resultados...</span>
+              </div>
+            } @else if (quickDramas().length === 0 && quickActors().length === 0) {
+              <div class="dropdown-status empty">
+                <span>Nenhum resultado encontrado.</span>
+              </div>
+            } @else {
+              @if (quickDramas().length > 0) {
+                <div class="dropdown-group">
+                  <span class="group-title"><i class="fa-solid fa-film"></i> Doramas</span>
+                  @for (drama of quickDramas(); track drama.id) {
+                    <a
+                      [routerLink]="['/dramas', drama.id]"
+                      class="dropdown-item"
+                      (click)="closeDropdown()"
+                    >
+                      <img [src]="drama.posterUrl" [alt]="drama.title" class="thumb drama-thumb" />
+                      <div class="item-info">
+                        <span class="name" [title]="drama.title">{{ drama.title }}</span>
+                        <small class="meta">
+                          {{ drama.releaseDate | date: 'yyyy' }} • {{ drama.country || 'Dorama' }}
+                        </small>
+                      </div>
+                      @if (drama.rating) {
+                        <span class="badge-rating"
+                          ><i class="fa-solid fa-star"></i>
+                          {{ drama.rating | number: '1.1-1' }}</span
+                        >
+                      }
+                    </a>
+                  }
                 </div>
-            </div>
+              }
 
-            <div class="search-bar">
-                <form action="" method="post" class="bar">
-                    <input type="text" name="search" id="search" placeholder="Buscar...">
-                    <button type="submit">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </button>
-                </form>
-
-                @if (isAuthOpen) {
-                <app-login (closeModal)="closeAuth()"></app-login>
-                }
-
-                <div class="buttons">
-                    <div class="login" (click)="openAuth()">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        <div>Entrar</div>
-                    </div>
+              @if (quickActors().length > 0) {
+                <div class="dropdown-group">
+                  <span class="group-title"><i class="fa-solid fa-users"></i> Artistas</span>
+                  @for (actor of quickActors(); track actor.id) {
+                    <a
+                      [routerLink]="['/actors', actor.id]"
+                      class="dropdown-item"
+                      (click)="closeDropdown()"
+                    >
+                      @if (actor.profileUrl) {
+                        <img
+                          [src]="actor.profileUrl"
+                          [alt]="actor.name"
+                          class="thumb actor-thumb"
+                        />
+                      } @else {
+                        <div class="thumb actor-thumb placeholder">
+                          <i class="fa-solid fa-user"></i>
+                        </div>
+                      }
+                      <div class="item-info">
+                        <span class="name">{{ actor.name }}</span>
+                        <small class="meta" [title]="actor.knownFor">{{
+                          actor.knownFor || 'Ator / Atriz'
+                        }}</small>
+                      </div>
+                    </a>
+                  }
                 </div>
-            </div>
+              }
 
-            <div class="toggle-navbar">
-                <i class="fa-solid fa-bars" (click)="isMenuOpen = !isMenuOpen"></i>
-            </div>
-
-            <div class="menu-openned" (click)="isMenuOpen = false" [class.open]="isMenuOpen">
-                <div class="open-menu" (click)="$event.stopPropagation()">
-                    <div class="menu-container">
-                        <div class="menu-header">
-                            <div class="logo">
-                                Oppa<span style="color: red;">Track</span>
-                            </div>
-                            <i class="fa-solid fa-xmark close-menu" (click)="isMenuOpen = !isMenuOpen"></i>
-                        </div>
-
-                        <form action="" method="post" class="menu-search">
-                            <input type="text" placeholder="Buscar..." name="search-menu" id="search-menu">
-                            <button type="submit">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </form>
-                        <div class="side-menu">
-                            @for (menu of menuList; track menu.route) {
-                            <div class="menu-item" [routerLink]="menu.route" routerLinkActive="active"
-                                [routerLinkActiveOptions]="{ exact: menu.exact || false }">
-                                <i [class]="menu.icon"></i>
-                                <div>{{ menu.label }}</div>
-                            </div>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="footer-menu">
-                        <div class="login-btn" (click)="openAuth()">
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                            <div>
-                                Entrar
-                            </div>
-                        </div>
-                    </div>
+              <div class="dropdown-footer">
+                <span class="footer-label">Buscar todos em:</span>
+                <div class="footer-actions">
+                  <button
+                    type="button"
+                    class="btn-dest"
+                    (click)="navigateToSearch(headerSearch.value, 'dramas')"
+                  >
+                    <i class="fa-solid fa-film"></i> Doramas
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-dest"
+                    (click)="navigateToSearch(headerSearch.value, 'actors')"
+                  >
+                    <i class="fa-solid fa-users"></i> Artistas
+                  </button>
                 </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Area do Usuario Logado / Botao Entrar -->
+      @if (authService.currentUser()) {
+        <div class="user-menu-container">
+          <button
+            type="button"
+            class="user-btn"
+            [class.active]="isUserDropdownOpen()"
+            (click)="toggleUserDropdown()"
+            aria-label="Menu do usuário"
+          >
+            <div class="avatar-circle">
+              @if (authService.currentProfile()?.avatar_url) {
+                <img [src]="authService.currentProfile()?.avatar_url" alt="Avatar" />
+              } @else {
+                <i class="fa-solid fa-user"></i>
+              }
             </div>
+            <span class="username">{{
+              authService.currentProfile()?.username || 'Minha Conta'
+            }}</span>
+            <i class="fa-solid fa-chevron-down chevron" [class.rotated]="isUserDropdownOpen()"></i>
+          </button>
+
+          <!-- Dropdown do Usuário Logado -->
+          @if (isUserDropdownOpen()) {
+            <div class="user-dropdown-menu">
+              <div class="user-dropdown-header">
+                <div class="user-name">{{ authService.currentProfile()?.username }}</div>
+                <div class="user-tag">{{ authService.currentProfile()?.profile_code }}</div>
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              <a
+                routerLink="/account/dashboard"
+                class="user-dropdown-item"
+                (click)="closeUserDropdown()"
+              >
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Dashboard</span>
+              </a>
+
+              <a
+                [routerLink]="['/profile', authService.currentProfile()?.id]"
+                class="user-dropdown-item"
+                (click)="closeUserDropdown()"
+              >
+                <i class="fa-solid fa-id-card"></i>
+                <span>Meu Perfil Público</span>
+              </a>
+
+              <a
+                routerLink="/account/settings"
+                class="user-dropdown-item"
+                (click)="closeUserDropdown()"
+              >
+                <i class="fa-solid fa-gear"></i>
+                <span>Configurações</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" class="user-dropdown-item logout-item" (click)="onLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Sair da Conta</span>
+              </button>
+            </div>
+          }
         </div>
-    </main>
+      } @else {
+        <button type="button" class="login-btn" (click)="openAuth()">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Entrar</span>
+        </button>
+      }
+
+      <!-- Botao Hamburger Mobile -->
+      <button
+        type="button"
+        class="mobile-toggle-btn"
+        (click)="toggleMenu()"
+        aria-label="Abrir menu"
+      >
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
 </nav>
+
+<!-- Drawer Lateral Mobile -->
+<div class="mobile-drawer-backdrop" [class.open]="isMenuOpen()" (click)="closeMenu()">
+  <div class="mobile-drawer" (click)="$event.stopPropagation()">
+    <div class="drawer-header">
+      <a routerLink="/home" class="logo" (click)="closeMenu()"> Oppa<span>Track</span> </a>
+      <button type="button" class="close-btn" (click)="closeMenu()" aria-label="Fechar menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Perfil Mobile se Logado -->
+    @if (authService.currentUser()) {
+      <div class="drawer-user-card">
+        <div class="drawer-avatar">
+          @if (authService.currentProfile()?.avatar_url) {
+            <img [src]="authService.currentProfile()?.avatar_url" alt="Avatar" />
+          } @else {
+            <i class="fa-solid fa-user"></i>
+          }
+        </div>
+        <div class="drawer-user-info">
+          <strong class="name">{{ authService.currentProfile()?.username }}</strong>
+          <span class="code">{{ authService.currentProfile()?.profile_code }}</span>
+        </div>
+      </div>
+    }
+
+    <!-- Campo de Busca Mobile -->
+    <form
+      class="drawer-search-form"
+      (submit)="$event.preventDefault(); onHeaderSearch(mobileSearch.value)"
+    >
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input
+        #mobileSearch
+        type="text"
+        placeholder="Buscar doramas, atores..."
+        autocomplete="off"
+        (input)="onSearchInput(mobileSearch.value)"
+      />
+      @if (isSearching()) {
+        <i class="fa-solid fa-circle-notch fa-spin search-loading"></i>
+      }
+    </form>
+
+    <!-- Resultados Mobile -->
+    @if (mobileSearch.value.trim().length >= 2) {
+      <div class="drawer-search-results">
+        @if (isSearching()) {
+          <div class="search-status">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span>Buscando resultados...</span>
+          </div>
+        } @else if (quickDramas().length === 0 && quickActors().length === 0) {
+          <div class="search-status empty">
+            <span>Nenhum resultado encontrado.</span>
+          </div>
+        } @else {
+          @if (quickDramas().length > 0) {
+            <div class="results-group">
+              <span class="group-title"><i class="fa-solid fa-film"></i> Doramas</span>
+              @for (drama of quickDramas(); track drama.id) {
+                <a
+                  [routerLink]="['/dramas', drama.id]"
+                  class="result-item"
+                  (click)="closeMenu(); mobileSearch.value = ''"
+                >
+                  <img [src]="drama.posterUrl" [alt]="drama.title" class="thumb drama-thumb" />
+                  <div class="info">
+                    <span class="title">{{ drama.title }}</span>
+                    <small class="meta"
+                      >{{ drama.releaseDate | date: 'yyyy' }} •
+                      {{ drama.country || 'Dorama' }}</small
+                    >
+                  </div>
+                  @if (drama.rating) {
+                    <span class="rating"
+                      ><i class="fa-solid fa-star"></i> {{ drama.rating | number: '1.1-1' }}</span
+                    >
+                  }
+                </a>
+              }
+            </div>
+          }
+
+          @if (quickActors().length > 0) {
+            <div class="results-group">
+              <span class="group-title"><i class="fa-solid fa-users"></i> Artistas</span>
+              @for (actor of quickActors(); track actor.id) {
+                <a
+                  [routerLink]="['/actors', actor.id]"
+                  class="result-item"
+                  (click)="closeMenu(); mobileSearch.value = ''"
+                >
+                  @if (actor.profileUrl) {
+                    <img [src]="actor.profileUrl" [alt]="actor.name" class="thumb actor-thumb" />
+                  } @else {
+                    <div class="thumb actor-thumb placeholder">
+                      <i class="fa-solid fa-user"></i>
+                    </div>
+                  }
+                  <div class="info">
+                    <span class="title">{{ actor.name }}</span>
+                    <small class="meta">{{ actor.knownFor || 'Ator / Atriz' }}</small>
+                  </div>
+                </a>
+              }
+            </div>
+          }
+
+          <div class="drawer-footer-actions">
+            <button
+              type="button"
+              class="btn-dest"
+              (click)="navigateToSearch(mobileSearch.value, 'dramas'); mobileSearch.value = ''"
+            >
+              <i class="fa-solid fa-film"></i> Ver Doramas
+            </button>
+            <button
+              type="button"
+              class="btn-dest"
+              (click)="navigateToSearch(mobileSearch.value, 'actors'); mobileSearch.value = ''"
+            >
+              <i class="fa-solid fa-users"></i> Ver Artistas
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Links de Navegação -->
+    @if (mobileSearch.value.trim().length < 2) {
+      <div class="drawer-links">
+        @for (menu of menuList; track menu.route) {
+          <a
+            class="drawer-link"
+            [routerLink]="menu.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: menu.exact || false }"
+            (click)="closeMenu()"
+          >
+            <i [class]="menu.icon"></i>
+            <span>{{ menu.label }}</span>
+          </a>
+        }
+
+        @if (authService.currentUser()) {
+          <div class="drawer-section-divider"></div>
+
+          <a class="drawer-link" routerLink="/dashboard" (click)="closeMenu()">
+            <i class="fa-solid fa-gauge-high"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a class="drawer-link" routerLink="/dashboard" (click)="closeMenu()">
+            <i class="fa-solid fa-id-card"></i>
+            <span>Meu Perfil</span>
+          </a>
+
+          <a class="drawer-link" routerLink="/dashboard" (click)="closeMenu()">
+            <i class="fa-solid fa-gear"></i>
+            <span>Configurações</span>
+          </a>
+        }
+      </div>
+    }
+
+    <div class="drawer-footer">
+      @if (authService.currentUser()) {
+        <button type="button" class="drawer-logout-btn" (click)="onLogout()">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Sair da Conta</span>
+        </button>
+      } @else {
+        <button type="button" class="drawer-login-btn" (click)="openAuth()">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          <span>Entrar na Conta</span>
+        </button>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Login -->
+@if (isAuthOpen()) {
+  <app-login (closeModal)="closeAuth()"></app-login>
+}

@@ -1,14 +1,25 @@
-<div class="drama-card">
-  <div class="drama-image" [style.--backdrop]="'url(' + (drama.backdropUrl || drama.posterUrl) + ')'"
-    [style.--poster]="'url(' + drama.posterUrl + ')'" [routerLink]="['/dramas', drama.id]">
-    <div class="drama-data">
-      <div class="data">
-        <div class="title-row">
-          <i class="fa-solid fa-tv"></i>
-          <b>{{ drama.title }}</b>
-        </div>
-        <div><i class="fa-solid fa-star"></i> {{ drama.rating | number:'1.1-1' }} / 10</div>
-        <div><i class="fa-solid fa-calendar"></i> {{ drama.releaseDate | date:'dd MMM yyyy' }}</div>
+<div class="drama-card" [routerLink]="['/dramas', drama.id]">
+  <div class="poster-container" [style.--poster]="'url(' + drama.posterUrl + ')'">
+    <!-- Badge de Avaliação no topo -->
+    @if (drama.rating) {
+      <div class="rating-badge">
+        <i class="fa-solid fa-star"></i>
+        <span>{{ drama.rating | number:'1.1-1' }}</span>
+      </div>
+    }
+
+    <!-- Dados na base do card -->
+    <div class="card-overlay">
+      <h3 class="title" [title]="drama.title">{{ drama.title }}</h3>
+      
+      <div class="meta-row">
+        @if (drama.releaseDate) {
+          <span class="year">{{ drama.releaseDate | date:'yyyy' }}</span>
+        }
+        @if (drama.country) {
+          <span class="dot">•</span>
+          <span class="country">{{ drama.country }}</span>
+        }
       </div>
     </div>
   </div>

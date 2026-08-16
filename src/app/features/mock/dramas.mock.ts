@@ -1,4 +1,4 @@
-import { Drama } from '../../models/home.model'; // Ajuste o caminho da sua model
+import { Drama } from '../../models/drama.model'; // Ajuste o caminho da sua model
 
 export const MOCK_DRAMAS: Drama[] = [
   {
