@@ -1,3 +1,5 @@
+@use "sass:color";
+
 :host {
   display: flex;
   flex-direction: column;
@@ -243,7 +245,7 @@
               border: 1px solid $accent-red;
 
               &:hover {
-                background: darken(#ff4d4d, 8%);
+                background: color.adjust(#ff4d4d, $lightness: -8%);
                 transform: translateY(-2px);
               }
             }

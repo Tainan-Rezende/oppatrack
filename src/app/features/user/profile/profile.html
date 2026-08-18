@@ -1,4 +1,5 @@
 <div class="profile-container">
+  <!-- Loading State Indicator -->
   @if (isLoadingProfile()) {
     <div class="loading-state-full">
       <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -6,11 +7,15 @@
     </div>
   } @else if (viewedProfile(); as user) {
     
-    <!-- ==================== HERO DO PERFIL ==================== -->
+    <!-- ==================== 1. ENHANCED PROFILE HERO CARD ==================== -->
     <header class="profile-hero">
+      <div class="hero-ambient-banner"></div>
+
       <div class="hero-content">
         
+        <!-- Avatar Box -->
         <div class="avatar-box">
+          <div class="avatar-ring-glow"></div>
           @if (user.avatar_url) {
             <img [src]="user.avatar_url" [alt]="user.username" class="avatar-image" />
           } @else {
@@ -20,25 +25,69 @@
           }
         </div>
 
+        <!-- User Information & Metadata -->
         <div class="user-meta">
           <div class="name-row">
-            <h1>{{ user.username }}</h1>
+            <div class="user-title-group">
+              <h1>{{ user.username }}</h1>
 
-            @if (isOwnProfile()) {
-              <a routerLink="/account/settings" class="btn-edit-profile">
-                <i class="fa-solid fa-user-pen"></i>
-                <span>Editar Perfil</span>
-              </a>
-            }
+              <!-- Dynamic Role & Staff Badge with Floating Tooltip -->
+              @if (user.role && user.role !== 'user') {
+                <span class="role-badge {{ user.role }}">
+                  @switch (user.role) {
+                    @case ('admin') {
+                      <i class="fa-solid fa-crown"></i>
+                      <span>Admin</span>
+                    }
+                    @case ('moderator') {
+                      <i class="fa-solid fa-shield-halved"></i>
+                      <span>Moderador</span>
+                    }
+                    @case ('curator') {
+                      <i class="fa-solid fa-wand-magic-sparkles"></i>
+                      <span>Curador</span>
+                    }
+                  }
+                  <span class="custom-badge-tooltip">{{ getRoleTooltip(user.role) }}</span>
+                </span>
+              } @else {
+                <!-- Standard Member Badge -->
+                <span class="user-rank-badge">
+                  <i class="fa-solid fa-sparkles"></i>
+                  <span>Maratonista</span>
+                  <span class="custom-badge-tooltip">{{ getRoleTooltip('user') }}</span>
+                </span>
+              }
+            </div>
+
+            <!-- Profile Action Buttons -->
+            <div class="actions-group">
+              <!-- Moderation Button (Visible for Admins/Moderators on third-party profiles) -->
+              @if (canModerate()) {
+                <button type="button" class="btn-moderate-profile" (click)="openModerationModal()">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <span>Moderar Perfil</span>
+                </button>
+              }
+
+              <!-- Edit Button (Only visible on own profile) -->
+              @if (isOwnProfile()) {
+                <a routerLink="/account/settings" class="btn-edit-profile">
+                  <i class="fa-solid fa-user-pen"></i>
+                  <span>Editar Perfil</span>
+                </a>
+              }
+            </div>
           </div>
 
+          <!-- User Bio -->
           @if (user.bio) {
             <p class="user-bio">{{ user.bio }}</p>
           } @else {
             <p class="user-bio empty">Nenhuma biografia adicionada ainda.</p>
           }
 
-          <!-- Redes Sociais -->
+          <!-- Social Links Bar -->
           @if (user.social_links) {
             <div class="social-links-bar">
               @if (user.social_links.instagram) {
@@ -47,6 +96,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="social-pill ig"
+                  title="Instagram"
                 >
                   <i class="fa-brands fa-instagram"></i>
                   <span>&#64;{{ user.social_links.instagram }}</span>
@@ -59,6 +109,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="social-pill x"
+                  title="X (Twitter)"
                 >
                   <i class="fa-brands fa-x-twitter"></i>
                   <span>&#64;{{ user.social_links.twitter }}</span>
@@ -71,6 +122,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="social-pill tg"
+                  title="Telegram"
                 >
                   <i class="fa-brands fa-telegram"></i>
                   <span>&#64;{{ user.social_links.telegram }}</span>
@@ -83,6 +135,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="social-pill tt"
+                  title="TikTok"
                 >
                   <i class="fa-brands fa-tiktok"></i>
                   <span>&#64;{{ user.social_links.tiktok }}</span>
@@ -95,6 +148,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   class="social-pill mdl"
+                  title="MyDramaList"
                 >
                   <i class="fa-solid fa-list-check"></i>
                   <span>MDL</span>
@@ -116,13 +170,16 @@
             </div>
           }
 
-          <!-- Países Preferidos -->
+          <!-- Preferred Countries Tags -->
           @if (user.preferred_countries && user.preferred_countries.length > 0) {
             <div class="preferred-countries">
-              <span class="pref-label">Preferências:</span>
+              <span class="pref-label"><i class="fa-solid fa-earth-asia"></i> Preferências:</span>
               <div class="tags-list">
                 @for (c of user.preferred_countries; track c) {
-                  <span class="country-tag">{{ countryLabels[c] || c }}</span>
+                  <span class="country-tag">
+                    <span class="dot-indicator"></span>
+                    {{ countryLabels[c] || c }}
+                  </span>
                 }
               </div>
             </div>
@@ -131,31 +188,55 @@
       </div>
     </header>
 
-    <!-- Estatísticas Rápidas -->
+    <!-- ==================== 2. ENHANCED STATS CARDS GRID ==================== -->
     <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-num">{{ stats().watching }}</span>
-        <span class="stat-lbl"><i class="fa-solid fa-play"></i> Assistindo</span>
+      <div class="stat-card watching">
+        <i class="fa-solid fa-play watermark-icon"></i>
+        <div class="stat-inner">
+          <span class="stat-num">{{ stats().watching }}</span>
+          <span class="stat-lbl"><i class="fa-solid fa-circle-play"></i> Assistindo</span>
+        </div>
+        <div class="card-accent-line"></div>
       </div>
-      <div class="stat-card">
-        <span class="stat-num">{{ stats().completed }}</span>
-        <span class="stat-lbl"><i class="fa-solid fa-check"></i> Concluídos</span>
+
+      <div class="stat-card completed">
+        <i class="fa-solid fa-circle-check watermark-icon"></i>
+        <div class="stat-inner">
+          <span class="stat-num">{{ stats().completed }}</span>
+          <span class="stat-lbl"><i class="fa-solid fa-check"></i> Concluídos</span>
+        </div>
+        <div class="card-accent-line"></div>
       </div>
-      <div class="stat-card">
-        <span class="stat-num">{{ stats().favorites }}</span>
-        <span class="stat-lbl"><i class="fa-solid fa-heart"></i> Favoritos</span>
+
+      <div class="stat-card favorites">
+        <i class="fa-solid fa-heart watermark-icon"></i>
+        <div class="stat-inner">
+          <span class="stat-num">{{ stats().favorites }}</span>
+          <span class="stat-lbl"><i class="fa-solid fa-star"></i> Favoritos</span>
+        </div>
+        <div class="card-accent-line"></div>
       </div>
-      <div class="stat-card">
-        <span class="stat-num">{{ stats().planToWatch }}</span>
-        <span class="stat-lbl"><i class="fa-solid fa-bookmark"></i> Quero Ver</span>
+
+      <div class="stat-card plan">
+        <i class="fa-solid fa-bookmark watermark-icon"></i>
+        <div class="stat-inner">
+          <span class="stat-num">{{ stats().planToWatch }}</span>
+          <span class="stat-lbl"><i class="fa-solid fa-bookmark"></i> Quero Ver</span>
+        </div>
+        <div class="card-accent-line"></div>
       </div>
-      <div class="stat-card">
-        <span class="stat-num">{{ stats().onHold + stats().dropped }}</span>
-        <span class="stat-lbl"><i class="fa-solid fa-pause"></i> Pausados / Drop</span>
+
+      <div class="stat-card onhold">
+        <i class="fa-solid fa-pause watermark-icon"></i>
+        <div class="stat-inner">
+          <span class="stat-num">{{ stats().onHold + stats().dropped }}</span>
+          <span class="stat-lbl"><i class="fa-solid fa-pause"></i> Pausados / Drop</span>
+        </div>
+        <div class="card-accent-line"></div>
       </div>
     </div>
 
-    <!-- ==================== 1. VITRINE DE FAVORITOS (HALL DA FAMA) ==================== -->
+    <!-- ==================== 3. VITRINE DE FAVORITOS ==================== -->
     @if (favoriteDramas().length > 0) {
       <section class="profile-section showcase-favorites">
         <div class="section-header">
@@ -245,7 +326,7 @@
       </section>
     }
 
-    <!-- ==================== 2. ASSISTINDO AGORA ==================== -->
+    <!-- ==================== 4. ASSISTINDO AGORA ==================== -->
     <section class="profile-section">
       <div class="section-header">
         <div class="header-title">
@@ -348,12 +429,12 @@
       } @else {
         <div class="empty-state-inline">
           <i class="fa-solid fa-tv"></i>
-          <span>Nenhum drama em andamento registrado.</span>
+          <span>Nenhum drama em andamento no momento.</span>
         </div>
       }
     </section>
 
-    <!-- ==================== 3. CONCLUÍDOS ==================== -->
+    <!-- ==================== 5. DRAMAS CONCLUÍDOS ==================== -->
     <section class="profile-section">
       <div class="section-header">
         <div class="header-title">
@@ -448,7 +529,7 @@
       }
     </section>
 
-    <!-- ==================== 4. BACKLOG & OUTRAS LISTAS ==================== -->
+    <!-- ==================== 6. BACKLOG & OUTRAS LISTAS ==================== -->
     <section class="profile-section backlog-section">
       <div class="section-header wrap-mobile">
         <div class="header-title">
@@ -554,8 +635,158 @@
       }
     </section>
 
+    <!-- ==================== 7. STAFF MODERATION MODAL ==================== -->
+    @if (isModerationModalOpen()) {
+      <div class="modal-backdrop" (click)="closeModerationModal()">
+        <div class="mod-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="header-title">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div>
+                <h3>Moderação de Perfil</h3>
+                <small>Editando usuário: <b>&#64;{{ user.username }}</b></small>
+              </div>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="closeModerationModal()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <!-- Avatar Moderation -->
+            <div class="form-group">
+              <label>URL do Avatar</label>
+              <div class="input-with-action">
+                <input
+                  type="text"
+                  [value]="modAvatarUrl()"
+                  (input)="modAvatarUrl.set($any($event.target).value)"
+                  placeholder="https://..."
+                />
+                @if (modAvatarUrl()) {
+                  <button type="button" class="btn-clear-avatar" (click)="clearAvatar()" title="Resetar Avatar">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Role Assignment (Only visible for Admins) -->
+            @if (isAdmin()) {
+              <div class="form-group">
+                <label>Cargo do Usuário (Role)</label>
+                <select
+                  [value]="modRole()"
+                  (change)="modRole.set($any($event.target).value)"
+                  class="select-role"
+                >
+                  <option value="user">Usuário Comum</option>
+                  <option value="curator">Curador Oficial</option>
+                  <option value="moderator">Moderador</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </div>
+            }
+
+            <!-- Bio Moderation -->
+            <div class="form-group">
+              <label>Biografia do Perfil</label>
+              <textarea
+                rows="3"
+                [value]="modBio()"
+                (input)="modBio.set($any($event.target).value)"
+                placeholder="Biografia do usuário..."
+                maxlength="500"
+              ></textarea>
+            </div>
+
+            <!-- Social Links Moderation -->
+            <div class="form-group">
+              <label>Redes Sociais (Handles / Links)</label>
+              <div class="socials-mod-grid">
+                <div class="social-input-row">
+                  <i class="fa-brands fa-instagram"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().instagram || ''"
+                    (input)="modSocials().instagram = $any($event.target).value"
+                    placeholder="Instagram handle"
+                  />
+                </div>
+                <div class="social-input-row">
+                  <i class="fa-brands fa-x-twitter"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().twitter || ''"
+                    (input)="modSocials().twitter = $any($event.target).value"
+                    placeholder="X / Twitter handle"
+                  />
+                </div>
+                <div class="social-input-row">
+                  <i class="fa-brands fa-telegram"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().telegram || ''"
+                    (input)="modSocials().telegram = $any($event.target).value"
+                    placeholder="Telegram username"
+                  />
+                </div>
+                <div class="social-input-row">
+                  <i class="fa-brands fa-tiktok"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().tiktok || ''"
+                    (input)="modSocials().tiktok = $any($event.target).value"
+                    placeholder="TikTok handle"
+                  />
+                </div>
+                <div class="social-input-row">
+                  <i class="fa-solid fa-list-check"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().mydramalist || ''"
+                    (input)="modSocials().mydramalist = $any($event.target).value"
+                    placeholder="MyDramaList user"
+                  />
+                </div>
+                <div class="social-input-row">
+                  <i class="fa-brands fa-discord"></i>
+                  <input
+                    type="text"
+                    [value]="modSocials().discord || ''"
+                    (input)="modSocials().discord = $any($event.target).value"
+                    placeholder="Discord tag"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeModerationModal()">
+              Cancelar
+            </button>
+            <button
+              type="button"
+              class="btn-save"
+              [disabled]="isSavingModeration()"
+              (click)="saveModerationChanges()"
+            >
+              @if (isSavingModeration()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Salvando...</span>
+              } @else {
+                <i class="fa-solid fa-check"></i>
+                <span>Salvar Alterações</span>
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
   } @else {
-    <!-- Tela de Perfil Não Encontrado -->
+    <!-- Not Found State -->
     <div class="not-found-state">
       <div class="not-found-content">
         <div class="glitch-icon">

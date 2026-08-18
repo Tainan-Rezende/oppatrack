@@ -28,8 +28,8 @@ export class DramaDetail implements OnInit, OnDestroy {
   // Service Injections
   private readonly route = inject(ActivatedRoute);
   private readonly dramaService = inject(DramaService);
-  private readonly reviewService = inject(ReviewService);
   private readonly elementRef = inject(ElementRef);
+  public readonly reviewService = inject(ReviewService);
   public readonly trackerService = inject(TrackerService);
   public readonly authService = inject(AuthService);
 

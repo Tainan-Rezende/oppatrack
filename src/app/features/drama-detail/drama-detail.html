@@ -17,7 +17,11 @@
         }
 
         @if (internalCommunityRating()) {
-          <div class="badge community-rating" (click)="scrollToReviews()" title="Média de avaliação da comunidade OppaTrack">
+          <div
+            class="badge community-rating"
+            (click)="scrollToReviews()"
+            title="Média de avaliação da comunidade OppaTrack"
+          >
             <i class="fa-solid fa-fire"></i>
             <span>OppaTrack {{ internalCommunityRating() }}</span>
           </div>
@@ -182,7 +186,12 @@
                   }
                   @case ('completed') {
                     <i class="fa-solid fa-circle-check"></i>
-                    <span>Concluído @if (tracked.rating) { • ★ {{ tracked.rating }} }</span>
+                    <span
+                      >Concluído
+                      @if (tracked.rating) {
+                        • ★ {{ tracked.rating }}
+                      }
+                    </span>
                   }
                   @case ('plan_to_watch') {
                     <i class="fa-solid fa-bookmark"></i>
@@ -258,7 +267,6 @@
       </div>
 
       <section id="community-reviews-section" class="reviews-hub-grid">
-        
         <div class="rating-summary-card">
           <h3 class="section-title">
             <i class="fa-solid fa-chart-simple"></i>
@@ -270,13 +278,13 @@
               <span class="score-number">{{ internalCommunityRating() || '—' }}</span>
               <span class="score-max">/ 10</span>
             </div>
-            
+
             <div class="stars-visual">
-              @for (star of [1,2,3,4,5]; track star) {
+              @for (star of [1, 2, 3, 4, 5]; track star) {
                 <i class="fa-solid fa-star"></i>
               }
             </div>
-            
+
             <span class="total-reviews-count">{{ rawReviews().length }} avaliações no total</span>
           </div>
 
@@ -290,7 +298,7 @@
                 [title]="'Filtrar apenas avaliações com nota ' + row.score"
               >
                 <span class="score-label">{{ row.score }} ★</span>
-                
+
                 <div class="bar-track">
                   <div class="bar-fill" [style.width.%]="row.percentage"></div>
                 </div>
@@ -310,7 +318,6 @@
         </div>
 
         <div class="reviews-feed-column">
-          
           <div class="create-review-panel">
             <h4 class="panel-title">
               <i class="fa-solid fa-pen-fancy"></i>
@@ -372,9 +379,16 @@
                 <i class="fa-solid fa-lock"></i>
                 <div class="prompt-text">
                   <h5>Gostaria de avaliar este drama?</h5>
-                  <p>Entre na sua conta para deixar sua nota e compartilhar sua opinião com a comunidade.</p>
+                  <p>
+                    Entre na sua conta para deixar sua nota e compartilhar sua opinião com a
+                    comunidade.
+                  </p>
                 </div>
-                <button type="button" class="btn-prompt-login" (click)="authService.openLoginModal()">
+                <button
+                  type="button"
+                  class="btn-prompt-login"
+                  (click)="authService.openLoginModal()"
+                >
                   <i class="fa-solid fa-arrow-right-to-bracket"></i>
                   <span>Entrar ou Criar Conta</span>
                 </button>
@@ -394,10 +408,13 @@
 
             <div class="custom-dropdown-container">
               <span class="dropdown-label">Ordenar por:</span>
-              
+
               <div class="dropdown-trigger-box" (click)="toggleSortDropdown($event)">
                 <span class="selected-text">{{ sortLabels[selectedSort()] }}</span>
-                <i class="fa-solid fa-chevron-down dropdown-arrow" [class.open]="isSortDropdownOpen()"></i>
+                <i
+                  class="fa-solid fa-chevron-down dropdown-arrow"
+                  [class.open]="isSortDropdownOpen()"
+                ></i>
               </div>
 
               @if (isSortDropdownOpen()) {
@@ -468,13 +485,21 @@
                   <div class="review-card-header">
                     <a [routerLink]="['/u', review.profiles?.username]" class="author-info">
                       @if (review.profiles?.avatar_url) {
-                        <img [src]="review.profiles?.avatar_url" [alt]="review.profiles?.username" class="author-avatar" />
+                        <img
+                          [src]="review.profiles?.avatar_url"
+                          [alt]="review.profiles?.username"
+                          class="author-avatar"
+                        />
                       } @else {
                         <div class="author-avatar-fallback"><i class="fa-solid fa-user"></i></div>
                       }
                       <div class="author-names">
-                        <span class="author-username">{{ review.profiles?.username || 'Usuário' }}</span>
-                        <span class="review-date">{{ review.created_at | date: 'dd MMM yyyy' }}</span>
+                        <span class="author-username">{{
+                          review.profiles?.username || 'Usuário'
+                        }}</span>
+                        <span class="review-date">{{
+                          review.created_at | date: 'dd MMM yyyy'
+                        }}</span>
                       </div>
                     </a>
 
@@ -495,7 +520,12 @@
                       title="Marcar este comentário como útil"
                     >
                       <i class="fa-solid fa-thumbs-up"></i>
-                      <span>Útil @if (review.likes_count > 0) { ({{ review.likes_count }}) }</span>
+                      <span
+                        >Útil
+                        @if (review.likes_count > 0) {
+                          ({{ review.likes_count }})
+                        }
+                      </span>
                     </button>
 
                     @if (authService.currentProfile()?.id === review.user_id) {
@@ -510,6 +540,21 @@
                       </button>
                     }
                   </div>
+                  @if (reviewService.canDeleteReview(review)) {
+                    <button
+                      type="button"
+                      class="btn-delete"
+                      (click)="deleteReview(review.id)"
+                      [title]="
+                        authService.currentProfile()?.id === review.user_id
+                          ? 'Excluir minha avaliação'
+                          : 'Moderar: Excluir avaliação'
+                      "
+                    >
+                      <i class="fa-solid fa-trash-can"></i>
+                      <span>Excluir</span>
+                    </button>
+                  }
                 </article>
               }
             </div>
@@ -558,7 +603,8 @@
               <h3>Nenhum comentário encontrado</h3>
               <p>
                 @if (selectedScoreFilter() !== null) {
-                  Não há avaliações com nota {{ selectedScoreFilter() }} ★. Experimente limpar o filtro.
+                  Não há avaliações com nota {{ selectedScoreFilter() }} ★. Experimente limpar o
+                  filtro.
                 } @else {
                   Seja o primeiro a compartilhar sua opinião sobre esta produção!
                 }
