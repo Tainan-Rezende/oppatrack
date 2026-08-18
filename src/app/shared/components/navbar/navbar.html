@@ -179,12 +179,12 @@
               </a>
 
               <a
-                [routerLink]="['/profile', authService.currentProfile()?.id]"
+                [routerLink]="['/u', authService.currentProfile()?.username]"
                 class="user-dropdown-item"
                 (click)="closeUserDropdown()"
               >
                 <i class="fa-solid fa-id-card"></i>
-                <span>Meu Perfil Público</span>
+                <span>Meu Perfil</span>
               </a>
 
               <a

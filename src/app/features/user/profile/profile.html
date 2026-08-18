@@ -1,6 +1,12 @@
 <div class="profile-container">
-  @if (viewedProfile(); as user) {
-    <!-- Hero / Header do Perfil -->
+  @if (isLoadingProfile()) {
+    <div class="loading-state-full">
+      <i class="fa-solid fa-circle-notch fa-spin"></i>
+      <span>Carregando perfil...</span>
+    </div>
+  } @else if (viewedProfile(); as user) {
+    
+    <!-- ==================== HERO DO PERFIL ==================== -->
     <header class="profile-hero">
       <div class="hero-content">
         
@@ -17,19 +23,7 @@
         <div class="user-meta">
           <div class="name-row">
             <h1>{{ user.username }}</h1>
-            
-            <button
-              type="button"
-              class="code-badge"
-              (click)="copyToClipboard(user.profile_code, 'code')"
-              title="Clique para copiar o código"
-            >
-              <i class="fa-solid" [class.fa-check]="copiedCode()" [class.fa-hashtag]="!copiedCode()"></i>
-              <span>{{ user.profile_code }}</span>
-              <span class="tooltip">{{ copiedCode() ? 'Copiado!' : 'Copiar' }}</span>
-            </button>
 
-            <!-- Botão de Editar só renderiza se for o perfil do próprio usuário autenticado -->
             @if (isOwnProfile()) {
               <a routerLink="/account/settings" class="btn-edit-profile">
                 <i class="fa-solid fa-user-pen"></i>
@@ -44,7 +38,7 @@
             <p class="user-bio empty">Nenhuma biografia adicionada ainda.</p>
           }
 
-          <!-- Redes Sociais & Contatos -->
+          <!-- Redes Sociais -->
           @if (user.social_links) {
             <div class="social-links-bar">
               @if (user.social_links.instagram) {
@@ -140,70 +134,447 @@
     <!-- Estatísticas Rápidas -->
     <div class="stats-grid">
       <div class="stat-card">
-        <span class="stat-num">0</span>
+        <span class="stat-num">{{ stats().watching }}</span>
         <span class="stat-lbl"><i class="fa-solid fa-play"></i> Assistindo</span>
       </div>
       <div class="stat-card">
-        <span class="stat-num">0</span>
+        <span class="stat-num">{{ stats().completed }}</span>
         <span class="stat-lbl"><i class="fa-solid fa-check"></i> Concluídos</span>
       </div>
       <div class="stat-card">
-        <span class="stat-num">0</span>
+        <span class="stat-num">{{ stats().favorites }}</span>
+        <span class="stat-lbl"><i class="fa-solid fa-heart"></i> Favoritos</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num">{{ stats().planToWatch }}</span>
         <span class="stat-lbl"><i class="fa-solid fa-bookmark"></i> Quero Ver</span>
       </div>
       <div class="stat-card">
-        <span class="stat-num">0</span>
-        <span class="stat-lbl"><i class="fa-solid fa-heart"></i> Favoritos</span>
+        <span class="stat-num">{{ stats().onHold + stats().dropped }}</span>
+        <span class="stat-lbl"><i class="fa-solid fa-pause"></i> Pausados / Drop</span>
       </div>
     </div>
 
-    <!-- Navegação de Abas do Catálogo -->
-    <section class="profile-content">
-      <div class="profile-tabs">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'watchlist'"
-          (click)="setTab('watchlist')"
-        >
-          <i class="fa-solid fa-clock"></i>
-          <span>Em Andamento</span>
-        </button>
+    <!-- ==================== 1. VITRINE DE FAVORITOS (HALL DA FAMA) ==================== -->
+    @if (favoriteDramas().length > 0) {
+      <section class="profile-section showcase-favorites">
+        <div class="section-header">
+          <div class="header-title">
+            <div class="icon-heart-glow">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <div class="title-text-group">
+              <div class="heading-row">
+                <h2>Favoritos da Vida & Recomendações</h2>
+                <span class="pill-count gold">{{ favoriteDramas().length }}</span>
+              </div>
+              <p class="subtitle">
+                @if (isOwnProfile()) {
+                  Produções inesquecíveis que mais marcaram a sua jornada
+                } @else {
+                  As produções mais marcantes e recomendadas por {{ user.username }}
+                }
+              </p>
+            </div>
+          </div>
 
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'completed'"
-          (click)="setTab('completed')"
-        >
-          <i class="fa-solid fa-circle-check"></i>
-          <span>Finalizados</span>
-        </button>
+          @if (favoriteDramas().length > 3) {
+            <div class="slider-controls">
+              <button
+                type="button"
+                class="btn-nav prev"
+                (click)="scrollTrack('favorites-track', 'left')"
+                aria-label="Voltar favoritos"
+              >
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button
+                type="button"
+                class="btn-nav next"
+                (click)="scrollTrack('favorites-track', 'right')"
+                aria-label="Avançar favoritos"
+              >
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          }
+        </div>
 
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'favorites'"
-          (click)="setTab('favorites')"
-        >
-          <i class="fa-solid fa-heart"></i>
-          <span>Favoritos</span>
-        </button>
+        <div class="carousel-track" id="favorites-track">
+          @for (item of favoriteDramas(); track item.drama_id) {
+            <div class="fav-card">
+              <a [routerLink]="['/dramas', item.drama_id]" class="fav-poster">
+                @if (item.drama_poster) {
+                  <img [src]="item.drama_poster" [alt]="item.drama_title" loading="lazy" />
+                } @else {
+                  <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+                }
+
+                <div class="fav-badge-star">
+                  <i class="fa-solid fa-star"></i>
+                  <span>{{ item.rating || '★' }}</span>
+                </div>
+              </a>
+
+              <div class="fav-info">
+                <a [routerLink]="['/dramas', item.drama_id]" class="fav-title" [title]="item.drama_title">
+                  {{ item.drama_title }}
+                </a>
+
+                @if (item.review_text && (item.is_review_public || isOwnProfile())) {
+                  <div class="fav-quote" [title]="item.review_text">
+                    <i class="fa-solid fa-quote-left"></i>
+                    <span>{{ item.review_text }}</span>
+                  </div>
+                }
+
+                @if (isOwnProfile()) {
+                  <button
+                    type="button"
+                    class="btn-quick-edit"
+                    (click)="openEditTracker(item, $event)"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Editar</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- ==================== 2. ASSISTINDO AGORA ==================== -->
+    <section class="profile-section">
+      <div class="section-header">
+        <div class="header-title">
+          <div class="icon-section watching">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <div class="title-text-group">
+            <div class="heading-row">
+              <h2>Assistindo Agora</h2>
+              <span class="pill-count blue">{{ watchingDramas().length }}</span>
+            </div>
+            <p class="subtitle">
+              @if (isOwnProfile()) {
+                Acompanhe seu progresso e episódios recentes
+              } @else {
+                Dramas e episódios atualmente em andamento
+              }
+            </p>
+          </div>
+        </div>
+
+        @if (watchingDramas().length > 3) {
+          <div class="slider-controls">
+            <button
+              type="button"
+              class="btn-nav prev"
+              (click)="scrollTrack('watching-track', 'left')"
+              aria-label="Voltar"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-nav next"
+              (click)="scrollTrack('watching-track', 'right')"
+              aria-label="Avançar"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        }
       </div>
 
-      <div class="tab-body">
-        <div class="empty-state">
-          <div class="empty-icon">
-            <i class="fa-solid fa-film"></i>
+      @if (watchingDramas().length > 0) {
+        <div class="carousel-track" id="watching-track">
+          @for (item of watchingDramas(); track item.drama_id) {
+            <div class="drama-card">
+              <a [routerLink]="['/dramas', item.drama_id]" class="card-poster">
+                @if (item.drama_poster) {
+                  <img [src]="item.drama_poster" [alt]="item.drama_title" loading="lazy" />
+                } @else {
+                  <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+                }
+
+                <div class="poster-badges">
+                  @if (item.rating) {
+                    <span class="badge rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</span>
+                  }
+                  @if (item.is_favorite) {
+                    <span class="badge fav"><i class="fa-solid fa-heart"></i></span>
+                  }
+                </div>
+
+                <div class="progress-bar-wrap">
+                  <div
+                    class="progress-fill"
+                    [style.width.%]="(item.current_episode / item.total_episodes) * 100"
+                  ></div>
+                </div>
+              </a>
+
+              <div class="card-info">
+                <a [routerLink]="['/dramas', item.drama_id]" class="drama-title" [title]="item.drama_title">
+                  {{ item.drama_title }}
+                </a>
+
+                <div class="meta-row">
+                  <span class="ep-text">
+                    Ep. <b>{{ item.current_episode }}</b> / {{ item.total_episodes }}
+                  </span>
+                  <span class="percent-text">
+                    {{ ((item.current_episode / item.total_episodes) * 100).toFixed(0) }}%
+                  </span>
+                </div>
+
+                @if (isOwnProfile()) {
+                  <button
+                    type="button"
+                    class="btn-quick-edit"
+                    (click)="openEditTracker(item, $event)"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Atualizar</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state-inline">
+          <i class="fa-solid fa-tv"></i>
+          <span>Nenhum drama em andamento registrado.</span>
+        </div>
+      }
+    </section>
+
+    <!-- ==================== 3. CONCLUÍDOS ==================== -->
+    <section class="profile-section">
+      <div class="section-header">
+        <div class="header-title">
+          <div class="icon-section completed">
+            <i class="fa-solid fa-circle-check"></i>
           </div>
-          <h3>Nenhum dorama por aqui ainda</h3>
-          <p>Explore os lançamentos no catálogo e monte a sua lista personalizada.</p>
-          <a routerLink="/dramas" class="btn-explore">
+          <div class="title-text-group">
+            <div class="heading-row">
+              <h2>Dramas Concluídos</h2>
+              <span class="pill-count green">{{ completedDramas().length }}</span>
+            </div>
+            <p class="subtitle">Histórico de todas as produções finalizadas</p>
+          </div>
+        </div>
+
+        @if (completedDramas().length > 3) {
+          <div class="slider-controls">
+            <button
+              type="button"
+              class="btn-nav prev"
+              (click)="scrollTrack('completed-track', 'left')"
+              aria-label="Voltar"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-nav next"
+              (click)="scrollTrack('completed-track', 'right')"
+              aria-label="Avançar"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        }
+      </div>
+
+      @if (completedDramas().length > 0) {
+        <div class="carousel-track" id="completed-track">
+          @for (item of completedDramas(); track item.drama_id) {
+            <div class="drama-card">
+              <a [routerLink]="['/dramas', item.drama_id]" class="card-poster">
+                @if (item.drama_poster) {
+                  <img [src]="item.drama_poster" [alt]="item.drama_title" loading="lazy" />
+                } @else {
+                  <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+                }
+
+                <div class="poster-badges">
+                  @if (item.rating) {
+                    <span class="badge rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</span>
+                  }
+                  @if (item.is_favorite) {
+                    <span class="badge fav"><i class="fa-solid fa-heart"></i></span>
+                  }
+                </div>
+              </a>
+
+              <div class="card-info">
+                <a [routerLink]="['/dramas', item.drama_id]" class="drama-title" [title]="item.drama_title">
+                  {{ item.drama_title }}
+                </a>
+
+                <div class="meta-row">
+                  <span class="ep-text done">
+                    <i class="fa-solid fa-check"></i> {{ item.total_episodes }} eps
+                  </span>
+                  @if (item.end_date) {
+                    <span class="date-text">{{ item.end_date | date: 'dd/MM/yy' }}</span>
+                  }
+                </div>
+
+                @if (isOwnProfile()) {
+                  <button
+                    type="button"
+                    class="btn-quick-edit"
+                    (click)="openEditTracker(item, $event)"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Editar</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state-inline">
+          <i class="fa-solid fa-award"></i>
+          <span>Nenhum drama finalizado registrado ainda.</span>
+        </div>
+      }
+    </section>
+
+    <!-- ==================== 4. BACKLOG & OUTRAS LISTAS ==================== -->
+    <section class="profile-section backlog-section">
+      <div class="section-header wrap-mobile">
+        <div class="header-title">
+          <div class="icon-section backlog">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div class="title-text-group">
+            <div class="heading-row">
+              <h2>Planejamento & Outras Listas</h2>
+            </div>
+            <p class="subtitle">Dramas para assistir no futuro, pausados ou abandonados</p>
+          </div>
+        </div>
+
+        <div class="backlog-tabs">
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeBacklogTab() === 'plan_to_watch'"
+            (click)="setBacklogTab('plan_to_watch')"
+          >
+            <i class="fa-solid fa-bookmark"></i>
+            <span>Quero Ver ({{ stats().planToWatch }})</span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeBacklogTab() === 'on_hold'"
+            (click)="setBacklogTab('on_hold')"
+          >
+            <i class="fa-solid fa-pause"></i>
+            <span>Em Espera ({{ stats().onHold }})</span>
+          </button>
+
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeBacklogTab() === 'dropped'"
+            (click)="setBacklogTab('dropped')"
+          >
+            <i class="fa-solid fa-ban"></i>
+            <span>Abandonados ({{ stats().dropped }})</span>
+          </button>
+        </div>
+      </div>
+
+      @if (backlogDramas().length > 0) {
+        <div class="carousel-track">
+          @for (item of backlogDramas(); track item.drama_id) {
+            <div class="drama-card">
+              <a [routerLink]="['/dramas', item.drama_id]" class="card-poster">
+                @if (item.drama_poster) {
+                  <img [src]="item.drama_poster" [alt]="item.drama_title" loading="lazy" />
+                } @else {
+                  <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+                }
+
+                <div class="poster-badges">
+                  @if (item.rating) {
+                    <span class="badge rating"><i class="fa-solid fa-star"></i> {{ item.rating }}</span>
+                  }
+                  @if (item.is_favorite) {
+                    <span class="badge fav"><i class="fa-solid fa-heart"></i></span>
+                  }
+                </div>
+              </a>
+
+              <div class="card-info">
+                <a [routerLink]="['/dramas', item.drama_id]" class="drama-title" [title]="item.drama_title">
+                  {{ item.drama_title }}
+                </a>
+
+                <div class="meta-row">
+                  <span class="status-tag {{ item.status }}">
+                    @switch (item.status) {
+                      @case ('plan_to_watch') { Quero Ver }
+                      @case ('on_hold') { Pausado }
+                      @case ('dropped') { Dropado }
+                    }
+                  </span>
+                </div>
+
+                @if (isOwnProfile()) {
+                  <button
+                    type="button"
+                    class="btn-quick-edit"
+                    (click)="openEditTracker(item, $event)"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Editar</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="empty-state-inline">
+          <i class="fa-solid fa-inbox"></i>
+          <span>Nenhum drama adicionado nesta categoria.</span>
+        </div>
+      }
+    </section>
+
+  } @else {
+    <!-- Tela de Perfil Não Encontrado -->
+    <div class="not-found-state">
+      <div class="not-found-content">
+        <div class="glitch-icon">
+          <i class="fa-solid fa-user-slash"></i>
+        </div>
+        <h2>Ops! Perfil não encontrado</h2>
+        <p>O nome de usuário pode ter sido alterado ou a conta não existe.</p>
+        
+        <div class="action-buttons">
+          <a routerLink="/home" class="btn-secondary">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+          </a>
+          <a routerLink="/dramas" class="btn-primary">
             <i class="fa-solid fa-compass"></i>
             <span>Explorar Catálogo</span>
           </a>
         </div>
       </div>
-    </section>
+    </div>
   }
 </div>

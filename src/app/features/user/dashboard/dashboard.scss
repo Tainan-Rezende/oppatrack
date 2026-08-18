@@ -39,7 +39,7 @@
     justify-content: space-between;
     gap: 1.5rem;
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       flex-direction: column;
       align-items: flex-start;
       padding: 1.25rem;
@@ -51,23 +51,29 @@
       gap: 1.25rem;
 
       .avatar-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid rgba($accent-red, 0.4);
+        background: #0c0c0e;
+
+        .avatar-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
         .avatar-default {
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-          background: rgba($accent-red, 0.15);
-          border: 2px solid rgba($accent-red, 0.4);
-          color: $accent-red;
-          font-size: 1.75rem;
+          width: 100%;
+          height: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
-
-          @media (max-width: 480px) {
-            width: 52px;
-            height: 52px;
-            font-size: 1.4rem;
-          }
+          background: rgba($accent-red, 0.15);
+          color: $accent-red;
+          font-size: 1.75rem;
         }
       }
 
@@ -89,15 +95,24 @@
             color: #fff;
           }
 
-          .profile-tag {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: $accent-red;
-            background: rgba($accent-red, 0.12);
-            border: 1px solid rgba($accent-red, 0.3);
+          .btn-view-public {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
             padding: 0.2rem 0.6rem;
             border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid $card-border;
+            color: $text-secondary;
+            font-size: 0.725rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+
+            &:hover {
+              color: #fff;
+              background: rgba(255, 255, 255, 0.1);
+            }
           }
         }
 
@@ -122,24 +137,55 @@
       }
     }
 
-    .btn-logout {
-      display: inline-flex;
+    .header-actions {
+      display: flex;
       align-items: center;
-      gap: 0.45rem;
-      padding: 0.5rem 1.15rem;
-      border-radius: 0.5rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid $card-border;
-      color: $text-secondary;
-      font-size: 0.825rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      gap: 0.5rem;
 
-      &:hover {
-        background: rgba($accent-red, 0.15);
-        border-color: rgba($accent-red, 0.4);
-        color: #fff;
+      @media (max-width: 768px) {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .btn-settings {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid $card-border;
+        color: $text-secondary;
+        font-size: 0.825rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: #fff;
+          background: rgba(255, 255, 255, 0.08);
+        }
+      }
+
+      .btn-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid $card-border;
+        color: $text-secondary;
+        font-size: 0.825rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba($accent-red, 0.15);
+          border-color: rgba($accent-red, 0.4);
+          color: #fff;
+        }
       }
     }
   }
@@ -263,8 +309,200 @@
     }
   }
 
-  // Conteúdo da Lista
+  // Conteúdo e Grid de Cards
   .tab-content {
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 4rem 0;
+      color: $text-muted;
+
+      i {
+        font-size: 1.75rem;
+        color: $accent-red;
+      }
+    }
+
+    .drama-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1.25rem;
+
+      @media (max-width: 600px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+    }
+
+    .drama-card {
+      background: $card-bg;
+      border: 1px solid $card-border;
+      border-radius: 0.65rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+
+      &:hover {
+        transform: translateY(-3px);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+
+      .card-poster {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        background: #0c0c0e;
+        display: block;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+
+        &:hover img {
+          transform: scale(1.04);
+        }
+
+        .poster-fallback {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $text-muted;
+          font-size: 2rem;
+        }
+
+        .poster-badges {
+          position: absolute;
+          top: 0.4rem;
+          right: 0.4rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.3rem;
+          z-index: 2;
+
+          .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.3rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            backdrop-filter: blur(6px);
+
+            &.rating {
+              background: rgba(0, 0, 0, 0.75);
+              color: #fbbf24;
+              border: 1px solid rgba(251, 191, 36, 0.3);
+            }
+
+            &.fav {
+              background: rgba(239, 68, 68, 0.85);
+              color: #fff;
+              justify-content: center;
+              width: 22px;
+              height: 22px;
+              padding: 0;
+              border-radius: 50%;
+            }
+          }
+        }
+
+        .progress-bar-wrap {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: rgba(0, 0, 0, 0.6);
+
+          .progress-fill {
+            height: 100%;
+            background: $accent-red;
+          }
+        }
+      }
+
+      .card-info {
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        flex: 1;
+
+        .drama-title {
+          font-size: 0.825rem;
+          font-weight: 700;
+          color: #fff;
+          text-decoration: none;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          line-height: 1.3;
+
+          &:hover {
+            color: $accent-red;
+          }
+        }
+
+        .meta-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          font-size: 0.72rem;
+
+          .ep-text {
+            color: $text-secondary;
+            b { color: #fff; }
+          }
+
+          .status-pill {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.1rem 0.4rem;
+            border-radius: 0.25rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: $text-muted;
+
+            &.watching { color: #60a5fa; background: rgba(96, 165, 250, 0.1); }
+            &.completed { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+            &.fav { color: $accent-red; }
+          }
+        }
+
+        .btn-quick-edit {
+          margin-top: auto;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.35rem;
+          padding: 0.4rem;
+          border-radius: 0.35rem;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid $card-border;
+          color: $text-secondary;
+          font-size: 0.725rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: #fff;
+          }
+        }
+      }
+    }
+
     .empty-list {
       background: $card-bg;
       border: 1px solid $card-border;

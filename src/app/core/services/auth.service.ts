@@ -12,6 +12,7 @@ export class AuthService {
   public currentUser = signal<User | null>(null);
   public currentProfile = signal<UserProfile | null>(null);
   public isLoading = signal<boolean>(true);
+  public isLoginModalOpen = signal<boolean>(false);
 
   private readonly supabaseUrl = 'https://fvkieynhmefonjrsocll.supabase.co';
   private readonly supabaseAnonKey =
@@ -22,20 +23,44 @@ export class AuthService {
     this.initAuth();
   }
 
-  // Getter para acesso ao cliente Supabase
   public getSupabaseClient(): SupabaseClient {
     return this.supabase;
   }
 
-  private async initAuth(): Promise<void> {
-    const { data } = await this.supabase.auth.getSession();
-    if (data.session?.user) {
-      this.currentUser.set(data.session.user);
-      await this.fetchProfile(data.session.user.id);
-    }
-    this.isLoading.set(false);
+  public openLoginModal(): void {
+    this.isLoginModalOpen.set(true);
+  }
 
-    // Escuta mudanças de sessão em tempo real
+  public closeLoginModal(): void {
+    this.isLoginModalOpen.set(false);
+  }
+
+  public async waitForAuth(): Promise<void> {
+    if (!this.isLoading()) return;
+
+    return new Promise<void>((resolve) => {
+      const interval = setInterval(() => {
+        if (!this.isLoading()) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 20);
+    });
+  }
+
+  private async initAuth(): Promise<void> {
+    try {
+      const { data } = await this.supabase.auth.getSession();
+      if (data?.session?.user) {
+        this.currentUser.set(data.session.user);
+        await this.fetchProfile(data.session.user.id);
+      }
+    } catch (err) {
+      console.error('Erro ao restaurar sessão:', err);
+    } finally {
+      this.isLoading.set(false);
+    }
+
     this.supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         this.currentUser.set(session.user);
@@ -53,24 +78,19 @@ export class AuthService {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     if (data) {
       this.currentProfile.set(data as UserProfile);
     }
   }
 
-  public async register(name: string, email: string, password: string): Promise<{ profileCode: string }> {
-    const profileCode = `#OPPA-${Math.floor(1000 + Math.random() * 9000)}`;
-
+  public async register(name: string, email: string, password: string): Promise<void> {
     const { data, error } = await this.supabase.auth.signUp({
       email: email.trim(),
       password: password,
       options: {
-        data: {
-          username: name.trim(),
-          profile_code: profileCode,
-        },
+        data: { username: name.trim() },
       },
     });
 
@@ -78,37 +98,32 @@ export class AuthService {
     if (data.user) {
       await this.fetchProfile(data.user.id);
     }
-
-    return { profileCode };
   }
 
   public async login(identifier: string, password: string): Promise<void> {
-    let resolvedEmail = identifier.trim();
+    const supabase = this.getSupabaseClient();
+    let emailToUse = identifier;
 
-    if (!resolvedEmail.includes('@')) {
-      const formattedCode = resolvedEmail.startsWith('#')
-        ? resolvedEmail.toUpperCase()
-        : `#${resolvedEmail.toUpperCase()}`;
-
-      const { data, error } = await this.supabase
+    if (!identifier.includes('@')) {
+      const { data, error } = await supabase
         .from('profiles')
         .select('email')
-        .eq('profile_code', formattedCode)
-        .single();
+        .ilike('username', identifier.trim())
+        .maybeSingle();
 
-      if (error || !data?.email) {
-        throw new Error('Código de perfil não encontrado.');
+      if (error || !data) {
+        throw new Error('E-mail, apelido ou senha incorretos.');
       }
 
-      resolvedEmail = data.email;
+      emailToUse = data.email;
     }
 
-    const { error } = await this.supabase.auth.signInWithPassword({
-      email: resolvedEmail,
-      password: password,
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: emailToUse,
+      password,
     });
 
-    if (error) throw error;
+    if (authError) throw authError;
   }
 
   public async recoverPassword(email: string): Promise<void> {

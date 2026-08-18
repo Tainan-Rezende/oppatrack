@@ -10,7 +10,7 @@ type SettingsTab = 'profile' | 'security' | 'preferences';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, FormsModule, RouterLink, AvatarCropper],
+  imports: [CommonModule, FormsModule, AvatarCropper],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })

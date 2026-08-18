@@ -1,0 +1,235 @@
+@if (trackerService.isModalOpen()) {
+  <div class="tracker-backdrop" (click)="close()">
+    <div class="tracker-card" (click)="$event.stopPropagation()">
+      
+      @if (trackerService.activePayload(); as drama) {
+        <div class="tracker-header">
+          <div class="header-poster">
+            @if (drama.drama_poster) {
+              <img [src]="drama.drama_poster" [alt]="drama.drama_title" />
+            } @else {
+              <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+            }
+          </div>
+          
+          <div class="header-info">
+            @if (trackerService.currentTrackedDrama()) {
+              <span class="badge-mode edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Editando Progresso</span>
+              </span>
+            } @else {
+              <span class="badge-mode add">
+                <i class="fa-solid fa-bookmark"></i>
+                <span>Adicionando à Lista</span>
+              </span>
+            }
+
+            <h3>{{ drama.drama_title }}</h3>
+            <span class="ep-count">{{ totalEpisodes() }} Episódios no total</span>
+          </div>
+
+          <button type="button" class="btn-close" (click)="close()" aria-label="Fechar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      }
+
+      <div class="tracker-body">
+        <div class="section-group">
+          <label class="section-label">Status</label>
+          <div class="status-grid">
+            @for (opt of statusOptions; track opt.value) {
+              <button
+                type="button"
+                class="status-btn"
+                [class.active]="status() === opt.value"
+                (click)="onStatusChange(opt.value)"
+              >
+                <i class="fa-solid {{ opt.icon }}"></i>
+                <span>{{ opt.label }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="section-row">
+          <div class="section-group flex-1">
+            <div class="label-with-hint">
+              <label class="section-label">Progresso de Episódios</label>
+              <span class="progress-percent">
+                {{ ((currentEpisode() / totalEpisodes()) * 100).toFixed(0) }}%
+              </span>
+            </div>
+            
+            <div class="episode-stepper">
+              <button
+                type="button"
+                class="step-btn"
+                [disabled]="currentEpisode() <= 0"
+                (click)="decrementEpisode()"
+              >
+                <i class="fa-solid fa-minus"></i>
+              </button>
+
+              <div class="ep-input-wrapper">
+                <input
+                  type="number"
+                  [min]="0"
+                  [max]="totalEpisodes()"
+                  [value]="currentEpisode()"
+                  (change)="onEpisodeInput($any($event.target).value)"
+                />
+                <span class="ep-divider">/</span>
+                <span class="ep-total">{{ totalEpisodes() }}</span>
+              </div>
+
+              <button
+                type="button"
+                class="step-btn"
+                [disabled]="currentEpisode() >= totalEpisodes()"
+                (click)="incrementEpisode()"
+              >
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="favorite-group">
+            <label class="section-label">Favorito</label>
+            <button
+              type="button"
+              class="btn-favorite"
+              [class.active]="isFavorite()"
+              (click)="toggleFavorite()"
+              title="Marcar como um dos seus favoritos"
+            >
+              <i class="fa-solid fa-heart"></i>
+              <span>{{ isFavorite() ? 'Favoritado' : 'Favoritar' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section-group">
+          <div class="label-with-hint">
+            <label class="section-label">Sua Nota</label>
+            <span class="score-display">
+              @if (rating() > 0) {
+                <i class="fa-solid fa-star"></i> <b>{{ rating() }}</b> / 10
+              } @else {
+                Sem avaliação
+              }
+            </span>
+          </div>
+          
+          <div class="rating-bar">
+            @for (score of [1,2,3,4,5,6,7,8,9,10]; track score) {
+              <button
+                type="button"
+                class="star-score-btn"
+                [class.filled]="rating() >= score"
+                [class.selected]="rating() === score"
+                (click)="setRating(score)"
+              >
+                {{ score }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="dates-grid">
+          <div class="section-group">
+            <label class="section-label">
+              <span>Data de Início</span>
+              <i class="fa-solid fa-circle-info hint-icon" title="Preenchida automaticamente ao iniciar"></i>
+            </label>
+            <input
+              type="date"
+              class="custom-date-input"
+              [value]="startDate()"
+              (input)="startDate.set($any($event.target).value)"
+            />
+          </div>
+
+          <div class="section-group">
+            <label class="section-label">
+              <span>Data de Conclusão</span>
+              <i class="fa-solid fa-circle-info hint-icon" title="Preenchida automaticamente ao finalizar"></i>
+            </label>
+            <input
+              type="date"
+              class="custom-date-input"
+              [value]="endDate()"
+              (input)="endDate.set($any($event.target).value)"
+            />
+          </div>
+        </div>
+
+        <div class="section-group">
+          <div class="label-with-hint">
+            <label class="section-label">Suas Notas & Comentários</label>
+            
+            <label class="privacy-toggle" title="Quem pode ler sua nota no seu perfil">
+              <input
+                type="checkbox"
+                [checked]="isReviewPublic()"
+                (change)="isReviewPublic.set($any($event.target).checked)"
+              />
+              <span class="toggle-pill">
+                <i class="fa-solid" [class.fa-globe]="isReviewPublic()" [class.fa-lock]="!isReviewPublic()"></i>
+                {{ isReviewPublic() ? 'Público no perfil' : 'Apenas para mim' }}
+              </span>
+            </label>
+          </div>
+
+          <textarea
+            rows="3"
+            class="review-textarea"
+            placeholder="Escreva suas impressões, personagens favoritos ou teorias..."
+            [value]="reviewText()"
+            (input)="reviewText.set($any($event.target).value)"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="tracker-footer">
+        @if (trackerService.currentTrackedDrama()) {
+          <button
+            type="button"
+            class="btn-remove"
+            [disabled]="isRemoving() || isSaving()"
+            (click)="onRemove()"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Remover da Lista</span>
+          </button>
+        }
+
+        <div class="right-actions">
+          <button type="button" class="btn-cancel" (click)="close()">
+            Cancelar
+          </button>
+          
+          <button
+            type="button"
+            class="btn-save"
+            [disabled]="isSaving() || isRemoving()"
+            (click)="onSave()"
+          >
+            @if (isSaving()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Salvando...</span>
+            } @else if (trackerService.currentTrackedDrama()) {
+              <i class="fa-solid fa-check"></i>
+              <span>Salvar Alterações</span>
+            } @else {
+              <i class="fa-solid fa-plus"></i>
+              <span>Adicionar à Lista</span>
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

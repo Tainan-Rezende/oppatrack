@@ -1,19 +1,33 @@
 <div class="dashboard-container">
   
-  <!-- Banner do Perfil -->
   <header class="profile-banner">
     <div class="profile-main">
       <div class="avatar-wrapper">
-        <div class="avatar-default">
-          <i class="fa-solid fa-user-astronaut"></i>
-        </div>
+        @if (authService.currentProfile()?.avatar_url) {
+          <img
+            [src]="authService.currentProfile()?.avatar_url"
+            [alt]="authService.currentProfile()?.username"
+            class="avatar-img"
+          />
+        } @else {
+          <div class="avatar-default">
+            <i class="fa-solid fa-user-astronaut"></i>
+          </div>
+        }
       </div>
 
       <div class="profile-details">
         <div class="name-row">
-          <h1>{{ authService.currentProfile()?.username || 'Dorameiro(a)' }}</h1>
-          <span class="profile-tag">{{ authService.currentProfile()?.profile_code || '#OPPA-USER' }}</span>
+          <h1>{{ authService.currentProfile()?.username || 'Fã de Dramas' }}</h1>
+          
+          @if (authService.currentProfile()?.username; as uname) {
+            <a [routerLink]="['/u', uname]" class="btn-view-public" title="Ver como outros usuários visualizam seu perfil">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>Ver Perfil Público</span>
+            </a>
+          }
         </div>
+
         <p class="member-since">
           <i class="fa-solid fa-calendar-check"></i>
           <span>Membro desde {{ (authService.currentProfile()?.created_at | date: 'MMM yyyy') || '2026' }}</span>
@@ -23,13 +37,19 @@
       </div>
     </div>
 
-    <button type="button" class="btn-logout" (click)="logout()" title="Encerrar sessão">
-      <i class="fa-solid fa-right-from-bracket"></i>
-      <span>Sair</span>
-    </button>
+    <div class="header-actions">
+      <a routerLink="/account/settings" class="btn-settings" title="Configurações de Conta">
+        <i class="fa-solid fa-gear"></i>
+        <span>Editar Perfil</span>
+      </a>
+
+      <button type="button" class="btn-logout" (click)="logout()" title="Encerrar sessão">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Sair</span>
+      </button>
+    </div>
   </header>
 
-  <!-- Cards de Métricas do Usuário -->
   <section class="user-stats-grid">
     <div class="stat-card">
       <div class="icon-wrap watch"><i class="fa-solid fa-circle-play"></i></div>
@@ -64,7 +84,6 @@
     </div>
   </section>
 
-  <!-- Navegação de Listas do Usuário -->
   <div class="tabs-nav">
     <button
       type="button"
@@ -97,17 +116,85 @@
     </button>
   </div>
 
-  <!-- Conteúdo da Lista -->
   <section class="tab-content">
-    <div class="empty-list">
-      <i class="fa-solid fa-clapperboard"></i>
-      <h3>Sua lista está pronta para ser preenchida</h3>
-      <p>Navegue pelo catálogo de doramas e adicione produções para acompanhar seu progresso.</p>
-      <a routerLink="/dramas" class="btn-explore">
-        <i class="fa-solid fa-compass"></i>
-        <span>Explorar Doramas</span>
-      </a>
-    </div>
+    @if (isLoadingList()) {
+      <div class="loading-state">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <span>Carregando sua lista de dramas...</span>
+      </div>
+    } @else if (currentList().length > 0) {
+      <div class="drama-grid">
+        @for (item of currentList(); track item.drama_id) {
+          <div class="drama-card">
+            <a [routerLink]="['/dramas', item.drama_id]" class="card-poster">
+              @if (item.drama_poster) {
+                <img [src]="item.drama_poster" [alt]="item.drama_title" loading="lazy" />
+              } @else {
+                <div class="poster-fallback"><i class="fa-solid fa-film"></i></div>
+              }
+
+              <div class="poster-badges">
+                @if (item.rating) {
+                  <span class="badge rating">
+                    <i class="fa-solid fa-star"></i> {{ item.rating }}
+                  </span>
+                }
+                @if (item.is_favorite) {
+                  <span class="badge fav"><i class="fa-solid fa-heart"></i></span>
+                }
+              </div>
+
+              <div class="progress-bar-wrap">
+                <div
+                  class="progress-fill"
+                  [style.width.%]="(item.current_episode / item.total_episodes) * 100"
+                ></div>
+              </div>
+            </a>
+
+            <div class="card-info">
+              <a [routerLink]="['/dramas', item.drama_id]" class="drama-title" [title]="item.drama_title">
+                {{ item.drama_title }}
+              </a>
+
+              <div class="meta-row">
+                <span class="ep-text">
+                  Ep. <b>{{ item.current_episode }}</b> / {{ item.total_episodes }}
+                </span>
+                <span class="status-pill {{ item.status }}">
+                  @switch (item.status) {
+                    @case ('watching') { Assistindo }
+                    @case ('completed') { Finalizado }
+                    @case ('plan_to_watch') { Quero Ver }
+                    @case ('on_hold') { Em Espera }
+                    @case ('dropped') { Abandonado }
+                  }
+                </span>
+              </div>
+
+              <button
+                type="button"
+                class="btn-quick-edit"
+                (click)="openEditTracker(item, $event)"
+              >
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Editar Progresso</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-list">
+        <i class="fa-solid fa-clapperboard"></i>
+        <h3>Nenhum drama encontrado nesta lista</h3>
+        <p>Navegue pelo catálogo de dramas e adicione produções para acompanhar seu progresso.</p>
+        <a routerLink="/dramas" class="btn-explore">
+          <i class="fa-solid fa-compass"></i>
+          <span>Explorar Catálogo</span>
+        </a>
+      </div>
+    }
   </section>
 
 </div>

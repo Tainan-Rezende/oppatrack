@@ -1,12 +1,10 @@
 <div class="modal-backdrop" [class.closing]="isClosing()" (click)="close()">
   <div class="modal-card" [class.closing]="isClosing()" (click)="$event.stopPropagation()">
     
-    <!-- Botão Fechar -->
     <button type="button" class="btn-close" (click)="close()" aria-label="Fechar modal">
       <i class="fa-solid fa-xmark"></i>
     </button>
 
-    <!-- ==================== VIEW 1: LOGIN ==================== -->
     @if (currentView() === 'login') {
       <div class="view-content">
         <div class="modal-header">
@@ -20,13 +18,13 @@
         <form class="auth-form" (submit)="$event.preventDefault(); onSubmitLogin()">
           
           <div class="field-group">
-            <label for="login-identifier">Código de Perfil ou E-mail</label>
+            <label for="login-identifier">E-mail ou Nome de Usuário</label>
             <div class="input-container">
               <i class="fa-solid fa-user input-icon"></i>
               <input
                 id="login-identifier"
                 type="text"
-                placeholder="Ex: #OPPA-4820 ou seu@email.com"
+                placeholder="Ex: Apelido ou seu@email.com"
                 autocomplete="username"
                 [value]="identifier()"
                 (input)="identifier.set($any($event.target).value)"
@@ -49,7 +47,7 @@
               <input
                 id="login-password"
                 [type]="showPassword() ? 'text' : 'password'"
-                placeholder="Digite sua senha (mín. 6 dígitos)"
+                placeholder="Digite sua senha"
                 autocomplete="current-password"
                 [value]="password()"
                 (input)="password.set($any($event.target).value)"
@@ -60,6 +58,13 @@
               </button>
             </div>
           </div>
+
+          @if (errorMessage()) {
+            <div class="error-box">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
 
           <button
             type="submit"
@@ -77,35 +82,28 @@
         </form>
 
         <div class="modal-footer">
-          <span>Não tem um perfil?</span>
+          <span>Não tem uma conta?</span>
           <button type="button" class="link-action" (click)="switchView('register')">
-            Criar perfil agora
+            Criar conta agora
           </button>
         </div>
       </div>
     }
 
-    <!-- ==================== VIEW 2: CADASTRO ==================== -->
     @if (currentView() === 'register') {
       <div class="view-content">
-        @if (registeredProfileCode(); as code) {
+        @if (registrationSuccess()) {
           <div class="success-box">
             <div class="success-icon">
               <i class="fa-solid fa-circle-check"></i>
             </div>
-            <h2>Perfil Criado!</h2>
-            <p class="subtitle">Guarde o seu código de perfil único:</p>
-            
-            <div class="code-badge">
-              <span>{{ code }}</span>
-            </div>
-
+            <h2>Conta Criada!</h2>
             <p class="desc-info">
-              Você pode usar este código ou seu e-mail junto à sua senha para entrar quando quiser.
+              Seu perfil foi criado com sucesso. Você já pode entrar usando seu e-mail ou nome de usuário.
             </p>
 
             <button type="button" class="btn-submit" (click)="switchView('login')">
-              Fazer Login com meu Código
+              Fazer Login na Conta
             </button>
           </div>
         } @else {
@@ -113,20 +111,21 @@
             <div class="header-icon">
               <i class="fa-solid fa-user-plus"></i>
             </div>
-            <h2>Criar Perfil</h2>
-            <p class="subtitle">Configure seu perfil rápido em menos de 1 minuto</p>
+            <h2>Criar Conta</h2>
+            <p class="subtitle">Cadastre-se rápido para gerenciar suas listas</p>
           </div>
 
           <form class="auth-form" (submit)="$event.preventDefault(); onSubmitRegister()">
             
             <div class="field-group">
-              <label for="reg-name">Nome ou Apelido</label>
+              <label for="reg-username">Nome de Usuário (Username)</label>
               <div class="input-container">
-                <i class="fa-solid fa-signature input-icon"></i>
+                <i class="fa-solid fa-at input-icon"></i>
                 <input
-                  id="reg-name"
+                  id="reg-username"
                   type="text"
-                  placeholder="Ex: Min-ho ou DoramaLover"
+                  placeholder="Seu Apelido"
+                  autocomplete="username"
                   [value]="regName()"
                   (input)="regName.set($any($event.target).value)"
                   required
@@ -135,7 +134,7 @@
             </div>
 
             <div class="field-group">
-              <label for="reg-email">E-mail para Recuperação</label>
+              <label for="reg-email">E-mail de Cadastro</label>
               <div class="input-container">
                 <i class="fa-solid fa-envelope input-icon"></i>
                 <input
@@ -170,6 +169,13 @@
               </div>
             </div>
 
+            @if (errorMessage()) {
+              <div class="error-box">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ errorMessage() }}</span>
+              </div>
+            }
+
             <button
               type="submit"
               class="btn-submit"
@@ -177,16 +183,16 @@
             >
               @if (isSubmitting()) {
                 <i class="fa-solid fa-circle-notch fa-spin"></i>
-                <span>Gerando perfil...</span>
+                <span>Criando conta...</span>
               } @else {
-                <span>Gerar Perfil & Entrar</span>
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Criar Conta</span>
+                <i class="fa-solid fa-user-plus"></i>
               }
             </button>
           </form>
 
           <div class="modal-footer">
-            <span>Já possui cadastro?</span>
+            <span>Já possui conta?</span>
             <button type="button" class="link-action" (click)="switchView('login')">
               Fazer login
             </button>
@@ -195,7 +201,6 @@
       </div>
     }
 
-    <!-- ==================== VIEW 3: RECUPERAÇÃO ==================== -->
     @if (currentView() === 'recover') {
       <div class="view-content">
         @if (recoverySuccess()) {
@@ -205,7 +210,7 @@
             </div>
             <h2>E-mail Enviado!</h2>
             <p class="desc-info">
-              Enviamos as instruções e o link de redefinição de senha para <b>{{ recoverEmail() }}</b>.
+              Enviamos as instruções de recuperação para <b>{{ recoverEmail() }}</b>.
             </p>
             <button type="button" class="btn-submit" (click)="switchView('login')">
               Voltar para o Login
@@ -217,7 +222,7 @@
               <i class="fa-solid fa-key"></i>
             </div>
             <h2>Recuperar Senha</h2>
-            <p class="subtitle">Informe seu e-mail cadastrado para redefinir o acesso à sua conta</p>
+            <p class="subtitle">Informe seu e-mail para redefinir o acesso</p>
           </div>
 
           <form class="auth-form" (submit)="$event.preventDefault(); onSubmitRecover()">
@@ -238,29 +243,36 @@
               </div>
             </div>
 
-          <button
-            type="submit"
-            class="btn-submit"
-            [disabled]="!recoverEmail().trim() || isSubmitting()"
-          >
-            @if (isSubmitting()) {
-              <i class="fa-solid fa-circle-notch fa-spin"></i>
-              <span>Enviando instruções...</span>
-            } @else {
-              <span>Enviar Link de Recuperação</span>
-              <i class="fa-solid fa-paper-plane"></i>
+            @if (errorMessage()) {
+              <div class="error-box">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>{{ errorMessage() }}</span>
+              </div>
             }
-          </button>
-        </form>
 
-        <div class="modal-footer">
-          <button type="button" class="link-action" (click)="switchView('login')">
-            <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
-          </button>
-        </div>
-      }
-    </div>
-  }
+            <button
+              type="submit"
+              class="btn-submit"
+              [disabled]="!recoverEmail().trim() || isSubmitting()"
+            >
+              @if (isSubmitting()) {
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+                <span>Enviando instruções...</span>
+              } @else {
+                <span>Enviar Link</span>
+                <i class="fa-solid fa-paper-plane"></i>
+              }
+            </button>
+          </form>
+
+          <div class="modal-footer">
+            <button type="button" class="link-action" (click)="switchView('login')">
+              <i class="fa-solid fa-arrow-left"></i> Voltar para o Login
+            </button>
+          </div>
+        }
+      </div>
+    }
 
   </div>
 </div>

@@ -174,7 +174,7 @@
           background: $input-bg;
           border: 1.5px solid $card-border;
           border-radius: 0.6rem;
-          overflow: hidden; // Previne que o box do autofill vaze os cantos arredondados
+          overflow: hidden;
           transition: all 0.2s ease;
 
           &:focus-within {
@@ -210,7 +210,6 @@
               font-family: inherit;
             }
 
-            // Força a tipografia, cor e fundo idênticos mesmo no preenchimento automático
             &:-webkit-autofill,
             &:-webkit-autofill:hover,
             &:-webkit-autofill:focus,
@@ -242,6 +241,25 @@
               color: #fff;
             }
           }
+        }
+      }
+
+      .error-box {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 0.5rem;
+        padding: 0.6rem 0.85rem;
+        color: #fca5a5;
+        font-size: 0.775rem;
+        line-height: 1.4;
+
+        i {
+          font-size: 0.9rem;
+          color: #ef4444;
+          flex-shrink: 0;
         }
       }
 
@@ -322,28 +340,8 @@
         color: #fff;
       }
 
-      .subtitle {
-        margin: 0;
-        font-size: 0.85rem;
-        color: $text-secondary;
-      }
-
-      .code-badge {
-        display: inline-block;
-        padding: 0.65rem 1.5rem;
-        background: rgba($accent-red, 0.15);
-        border: 1.5px dashed $accent-red;
-        border-radius: 0.5rem;
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: 0.1em;
-        margin: 0.5rem 0;
-        animation: pulseBadge 2s infinite ease-in-out;
-      }
-
       .desc-info {
-        font-size: 0.8rem;
+        font-size: 0.825rem;
         color: $text-muted;
         line-height: 1.6;
         margin: 0 0 0.5rem 0;
@@ -367,23 +365,15 @@
     }
   }
 
-  // Keyframes de Entrada e Saída
+  // Keyframes
   @keyframes backdropFadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
   @keyframes backdropFadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
+    from { opacity: 1; }
+    to { opacity: 0; }
   }
 
   @keyframes modalPopIn {
@@ -427,16 +417,6 @@
     100% {
       transform: scale(1);
       opacity: 1;
-    }
-  }
-
-  @keyframes pulseBadge {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 rgba($accent-red, 0.35);
-    }
-    50% {
-      box-shadow: 0 0 16px 4px rgba($accent-red, 0.2);
     }
   }
 }

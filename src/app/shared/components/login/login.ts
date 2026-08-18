@@ -31,7 +31,7 @@ export class Login {
   public regName = signal<string>('');
   public regEmail = signal<string>('');
   public regPassword = signal<string>('');
-  public registeredProfileCode = signal<string | null>(null);
+  public registrationSuccess = signal<boolean>(false);
 
   // Campo de Recuperação
   public recoverEmail = signal<string>('');
@@ -42,20 +42,19 @@ export class Login {
     this.close();
   }
 
-  // Fecha de forma suave com animação reversa
   public close(): void {
     if (this.isClosing()) return;
     this.isClosing.set(true);
     setTimeout(() => {
       this.closeModal.emit();
-    }, 220); // Duração sincronizada com a animação SCSS
+    }, 220);
   }
 
   public switchView(view: AuthView): void {
     this.currentView.set(view);
     this.errorMessage.set(null);
     this.recoverySuccess.set(false);
-    this.registeredProfileCode.set(null);
+    this.registrationSuccess.set(false);
   }
 
   public togglePasswordVisibility(): void {
@@ -63,17 +62,18 @@ export class Login {
   }
 
   public async onSubmitLogin(): Promise<void> {
-    if (!this.identifier().trim() || this.password().length < 6 || this.isSubmitting()) return;
+    const id = this.identifier().trim();
+    if (!id || this.password().length < 6 || this.isSubmitting()) return;
 
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
     try {
-      await this.authService.login(this.identifier(), this.password());
+      await this.authService.login(id, this.password());
       this.close();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/account/dashboard']);
     } catch (err: any) {
-      this.errorMessage.set(err.message || 'E-mail, código ou senha incorretos.');
+      this.errorMessage.set(err.message || 'Credenciais incorretas (e-mail, apelido ou senha).');
     } finally {
       this.isSubmitting.set(false);
     }
@@ -93,14 +93,14 @@ export class Login {
     this.errorMessage.set(null);
 
     try {
-      const { profileCode } = await this.authService.register(
-        this.regName(),
-        this.regEmail(),
+      await this.authService.register(
+        this.regName().trim(),
+        this.regEmail().trim(),
         this.regPassword()
       );
-      this.registeredProfileCode.set(profileCode);
+      this.registrationSuccess.set(true);
     } catch (err: any) {
-      this.errorMessage.set(err.message || 'Erro ao criar perfil. Tente outro e-mail.');
+      this.errorMessage.set(err.message || 'Erro ao criar conta. Tente outro e-mail ou username.');
     } finally {
       this.isSubmitting.set(false);
     }

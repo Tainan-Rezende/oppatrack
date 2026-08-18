@@ -2,9 +2,11 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TrackerService } from '../../../core/services/tracker.service';
 import { UserProfile } from '../../../models/user.model';
+import { UserDramaTracker } from '../../../models/tracker.model';
 
-type ProfileTab = 'watchlist' | 'completed' | 'favorites';
+export type BacklogTab = 'plan_to_watch' | 'on_hold' | 'dropped';
 
 @Component({
   selector: 'app-profile',
@@ -15,16 +17,17 @@ type ProfileTab = 'watchlist' | 'completed' | 'favorites';
 export class Profile {
   private readonly route = inject(ActivatedRoute);
   public readonly authService = inject(AuthService);
+  public readonly trackerService = inject(TrackerService);
 
-  public activeTab = signal<ProfileTab>('watchlist');
-  public copiedCode = signal<boolean>(false);
+  public activeBacklogTab = signal<BacklogTab>('plan_to_watch');
   public copiedDiscord = signal<boolean>(false);
-  public isLoading = signal<boolean>(false);
+  public isLoadingProfile = signal<boolean>(true);
+  public isLoadingDramas = signal<boolean>(false);
 
-  // Perfil exibido (próprio ou de outro usuário)
   public viewedProfile = signal<UserProfile | null>(null);
+  public userDramas = signal<UserDramaTracker[]>([]);
 
-  // Identifica se a página pertence ao usuário autenticado atual
+  // Compara se o perfil exibido pertence ao usuário logado
   public isOwnProfile = computed(() => {
     const current = this.authService.currentProfile();
     const viewed = this.viewedProfile();
@@ -40,73 +43,152 @@ export class Profile {
     TW: 'Taiwan',
   };
 
+  public stats = computed(() => {
+    const list = this.userDramas();
+    return {
+      watching: list.filter((d) => d.status === 'watching').length,
+      completed: list.filter((d) => d.status === 'completed').length,
+      planToWatch: list.filter((d) => d.status === 'plan_to_watch').length,
+      onHold: list.filter((d) => d.status === 'on_hold').length,
+      dropped: list.filter((d) => d.status === 'dropped').length,
+      favorites: list.filter((d) => d.is_favorite).length,
+    };
+  });
+
+  public favoriteDramas = computed(() => this.userDramas().filter((d) => d.is_favorite));
+  public watchingDramas = computed(() => this.userDramas().filter((d) => d.status === 'watching'));
+  public completedDramas = computed(() => this.userDramas().filter((d) => d.status === 'completed'));
+
+  public backlogDramas = computed(() => {
+    const tab = this.activeBacklogTab();
+    return this.userDramas().filter((d) => d.status === tab);
+  });
+
   constructor() {
-    this.route.paramMap.subscribe(async (params) => {
-      const idOrCode = params.get('id');
-
-      // Se acessou /profile sem ID, exibe o perfil logado
-      if (!idOrCode) {
-        this.viewedProfile.set(this.authService.currentProfile());
-        return;
+    effect(() => {
+      this.trackerService.lastUpdated();
+      const profile = this.viewedProfile();
+      if (profile) {
+        this.loadUserDramas(profile.id);
       }
-
-      const current = this.authService.currentProfile();
-      if (current && (current.id === idOrCode || current.profile_code === idOrCode)) {
-        this.viewedProfile.set(current);
-        return;
-      }
-
-      // Se for outro usuário, consulta no banco pelo ID ou pelo código #OPPA-XXXX
-      await this.fetchPublicProfile(idOrCode);
     });
 
-    effect(() => {
-      const current = this.authService.currentProfile();
-      const routeId = this.route.snapshot.paramMap.get('id');
-      if (!routeId && current) {
-        this.viewedProfile.set(current);
+    this.route.paramMap.subscribe(async (params) => {
+      // 1. Extrai o parâmetro com fallback seguro
+      let targetUser =
+        params.get('username') ||
+        params.get('id') ||
+        params.get('user') ||
+        params.get('name');
+
+      // Se o roteador não mapeou nome de parâmetro, pega o segmento final da URL
+      if (!targetUser) {
+        const segments = window.location.pathname.split('/').filter(Boolean);
+        const lastSegment = segments[segments.length - 1];
+        if (lastSegment && lastSegment !== 'profile' && lastSegment !== 'u') {
+          targetUser = decodeURIComponent(lastSegment);
+        }
       }
+
+      await this.authService.waitForAuth();
+
+      // Se realmente não houver parâmetro nenhum na rota (ex: /account/profile)
+      if (!targetUser) {
+        const current = this.authService.currentProfile();
+        this.viewedProfile.set(current);
+        if (current) this.loadUserDramas(current.id);
+        this.isLoadingProfile.set(false);
+        return;
+      }
+
+      const cleanUsername = decodeURIComponent(targetUser).trim();
+      await this.fetchProfileByUsername(cleanUsername);
     });
   }
 
-  private async fetchPublicProfile(idOrCode: string): Promise<void> {
-    this.isLoading.set(true);
+  private async fetchProfileByUsername(targetUsername: string): Promise<void> {
+    this.isLoadingProfile.set(true);
     try {
-      const isCode = idOrCode.startsWith('#') || idOrCode.startsWith('OPPA-');
-      const cleanCode = idOrCode.startsWith('#') ? idOrCode : `#${idOrCode}`;
+      const current = this.authService.currentProfile();
 
-      let query = this.authService.getSupabaseClient().from('profiles').select('*');
-
-      if (isCode) {
-        query = query.eq('profile_code', cleanCode);
-      } else {
-        query = query.eq('id', idOrCode);
+      // Se for exatamente o usuário logado, reaproveita a sessão
+      if (
+        current &&
+        current.username &&
+        current.username.toLowerCase() === targetUsername.toLowerCase()
+      ) {
+        this.viewedProfile.set(current);
+        await this.loadUserDramas(current.id);
+        return;
       }
 
-      const { data, error } = await query.maybeSingle();
-      if (error) throw error;
+      // Busca case-insensitive no Supabase via .ilike()
+      const { data, error } = await this.authService
+        .getSupabaseClient()
+        .from('profiles')
+        .select('*')
+        .ilike('username', targetUsername)
+        .maybeSingle();
 
+      if (error) {
+        console.error('[Profile] Erro ao consultar perfil:', error);
+        throw error;
+      }
+
+      // Define os dados do outro perfil (preservando o case original do banco)
       this.viewedProfile.set(data as UserProfile);
+
+      if (data) {
+        await this.loadUserDramas(data.id);
+      }
     } catch (err) {
-      console.error('Erro ao buscar perfil público:', err);
+      console.error('[Profile] Falha ao carregar perfil público:', err);
       this.viewedProfile.set(null);
     } finally {
-      this.isLoading.set(false);
+      this.isLoadingProfile.set(false);
     }
   }
 
-  public setTab(tab: ProfileTab): void {
-    this.activeTab.set(tab);
+  private async loadUserDramas(userId: string): Promise<void> {
+    this.isLoadingDramas.set(true);
+    try {
+      const dramas = await this.trackerService.getUserDramas(userId);
+      this.userDramas.set(dramas);
+    } catch (err) {
+      console.error('[Profile] Erro ao carregar dramas do perfil:', err);
+    } finally {
+      this.isLoadingDramas.set(false);
+    }
   }
 
-  public copyToClipboard(text: string, type: 'code' | 'discord'): void {
+  public setBacklogTab(tab: BacklogTab): void {
+    this.activeBacklogTab.set(tab);
+  }
+
+  public openEditTracker(drama: UserDramaTracker, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.trackerService.openTracker({
+      drama_id: drama.drama_id,
+      drama_title: drama.drama_title,
+      drama_poster: drama.drama_poster,
+      total_episodes: drama.total_episodes,
+    });
+  }
+
+  public scrollTrack(elementId: string, direction: 'left' | 'right'): void {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const scrollAmount = direction === 'left' ? -380 : 380;
+    el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  public copyToClipboard(text: string, type: 'discord'): void {
     navigator.clipboard.writeText(text);
-    if (type === 'code') {
-      this.copiedCode.set(true);
-      setTimeout(() => this.copiedCode.set(false), 2000);
-    } else {
-      this.copiedDiscord.set(true);
-      setTimeout(() => this.copiedDiscord.set(false), 2000);
-    }
+    this.copiedDiscord.set(true);
+    setTimeout(() => this.copiedDiscord.set(false), 2000);
   }
 }

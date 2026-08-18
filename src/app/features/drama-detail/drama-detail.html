@@ -4,16 +4,22 @@
     <span>Carregando detalhes do drama...</span>
   </div>
 } @else if (drama(); as d) {
-  <!-- Header Panorâmico -->
   <header [style.background-image]="d.backdropUrl ? 'url(' + d.backdropUrl + ')' : 'none'">
     <div class="fast-info">
       <h1 class="name">{{ d.title }}</h1>
 
       <div class="info">
         @if (d.rating) {
-          <div class="badge rating">
+          <div class="badge rating" title="Nota Geral TMDB">
             <i class="fa-solid fa-star"></i>
             <span>{{ d.rating | number: '1.1-1' }}</span>
+          </div>
+        }
+
+        @if (internalCommunityRating()) {
+          <div class="badge community-rating" (click)="scrollToReviews()" title="Média de avaliação da comunidade OppaTrack">
+            <i class="fa-solid fa-fire"></i>
+            <span>OppaTrack {{ internalCommunityRating() }}</span>
           </div>
         }
 
@@ -56,27 +62,28 @@
     </div>
   </header>
 
-  <!-- Navegação de Abas -->
   <div class="navigation">
     <div class="nav-item" [class.active]="activeTab() === 'info'" (click)="setTab('info')">
       <i class="fa-solid fa-circle-info"></i>
-      <span>Informações</span>
+      <span>Visão Geral</span>
     </div>
     <div class="nav-item" [class.active]="activeTab() === 'cast'" (click)="setTab('cast')">
       <i class="fa-solid fa-users"></i>
-      <span>Elenco</span>
+      <span>Elenco Completo</span>
     </div>
     <div class="nav-item" [class.active]="activeTab() === 'photos'" (click)="setTab('photos')">
       <i class="fa-solid fa-camera"></i>
       <span>Fotos</span>
     </div>
+    <div class="nav-item review-link" (click)="scrollToReviews()">
+      <i class="fa-solid fa-comments"></i>
+      <span>Avaliações & Discussão ({{ rawReviews().length }})</span>
+    </div>
   </div>
 
-  <!-- Conteúdo Principal -->
   <div class="container">
     @if (activeTab() === 'info') {
       <div class="info-grid">
-        <!-- Coluna 1: Ficha Técnica -->
         <div class="main-container data-card">
           <h3 class="section-title">
             <i class="fa-solid fa-sliders"></i>
@@ -133,7 +140,6 @@
               </div>
             }
 
-            <!-- Onde Assistir -->
             @if (d.streaming && d.streaming.length > 0) {
               <div class="watch-section full-width">
                 <b>Onde Assistir:</b>
@@ -156,11 +162,48 @@
           </div>
         </div>
 
-        <!-- Coluna 2: Pôster, Sinopse e Destaques -->
         <div class="main-container overview-card">
           <div class="poster-column">
             @if (d.posterUrl) {
               <img [src]="d.posterUrl" [alt]="d.title" class="poster" />
+            }
+
+            @if (currentTracker(); as tracked) {
+              <button
+                type="button"
+                class="btn-track-drama tracked {{ tracked.status }}"
+                (click)="openTracker()"
+                title="Clique para editar seu progresso"
+              >
+                @switch (tracked.status) {
+                  @case ('watching') {
+                    <i class="fa-solid fa-play"></i>
+                    <span>Ep. {{ tracked.current_episode }}/{{ d.totalEpisodes || 16 }}</span>
+                  }
+                  @case ('completed') {
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Concluído @if (tracked.rating) { • ★ {{ tracked.rating }} }</span>
+                  }
+                  @case ('plan_to_watch') {
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span>Quero Ver</span>
+                  }
+                  @case ('on_hold') {
+                    <i class="fa-solid fa-pause"></i>
+                    <span>Em Espera</span>
+                  }
+                  @case ('dropped') {
+                    <i class="fa-solid fa-ban"></i>
+                    <span>Abandonei</span>
+                  }
+                }
+                <i class="fa-solid fa-pen edit-icon"></i>
+              </button>
+            } @else {
+              <button type="button" class="btn-track-drama" (click)="openTracker()">
+                <i class="fa-solid fa-bookmark"></i>
+                <span>Adicionar à Lista</span>
+              </button>
             }
           </div>
 
@@ -183,7 +226,6 @@
               </div>
             }
 
-            <!-- Mini-Elenco -->
             @if (d.castPreview && d.castPreview.length > 0) {
               <div class="cast-preview-section">
                 <span class="sub-title">Elenco Principal</span>
@@ -214,9 +256,319 @@
           </div>
         </div>
       </div>
+
+      <section id="community-reviews-section" class="reviews-hub-grid">
+        
+        <div class="rating-summary-card">
+          <h3 class="section-title">
+            <i class="fa-solid fa-chart-simple"></i>
+            <span>Avaliações dos Fãs</span>
+          </h3>
+
+          <div class="overall-score-box">
+            <div class="score-display">
+              <span class="score-number">{{ internalCommunityRating() || '—' }}</span>
+              <span class="score-max">/ 10</span>
+            </div>
+            
+            <div class="stars-visual">
+              @for (star of [1,2,3,4,5]; track star) {
+                <i class="fa-solid fa-star"></i>
+              }
+            </div>
+            
+            <span class="total-reviews-count">{{ rawReviews().length }} avaliações no total</span>
+          </div>
+
+          <div class="histogram-list">
+            @for (row of ratingBreakdown(); track row.score) {
+              <button
+                type="button"
+                class="histogram-row"
+                [class.active]="selectedScoreFilter() === row.score"
+                (click)="toggleScoreFilter(row.score)"
+                [title]="'Filtrar apenas avaliações com nota ' + row.score"
+              >
+                <span class="score-label">{{ row.score }} ★</span>
+                
+                <div class="bar-track">
+                  <div class="bar-fill" [style.width.%]="row.percentage"></div>
+                </div>
+
+                <span class="percent-label">{{ row.percentage.toFixed(0) }}%</span>
+                <span class="count-label">({{ row.count }})</span>
+              </button>
+            }
+          </div>
+
+          @if (selectedScoreFilter() !== null) {
+            <button type="button" class="btn-clear-score-filter" (click)="clearScoreFilter()">
+              <i class="fa-solid fa-xmark"></i>
+              <span>Limpar filtro de {{ selectedScoreFilter() }} ★</span>
+            </button>
+          }
+        </div>
+
+        <div class="reviews-feed-column">
+          
+          <div class="create-review-panel">
+            <h4 class="panel-title">
+              <i class="fa-solid fa-pen-fancy"></i>
+              <span>Deixe sua Avaliação</span>
+            </h4>
+
+            @if (authService.currentProfile()) {
+              <form (submit)="$event.preventDefault(); submitReview()" class="wide-review-form">
+                <div class="form-header-bar">
+                  <div class="score-picker-group">
+                    <span class="lbl">Sua Nota:</span>
+                    <div class="score-options">
+                      @for (s of [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]; track s) {
+                        <button
+                          type="button"
+                          class="btn-score-tag"
+                          [class.active]="newReviewRating() === s"
+                          (click)="newReviewRating.set(s)"
+                        >
+                          {{ s }} ★
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <textarea
+                  rows="3"
+                  class="wide-review-input"
+                  placeholder="Compartilhe sua opinião sobre o drama, atuações, enredo e ritmo..."
+                  [value]="newReviewContent()"
+                  (input)="newReviewContent.set($any($event.target).value)"
+                  [attr.maxlength]="maxReviewLength"
+                  required
+                ></textarea>
+
+                <div class="form-footer-bar">
+                  <span class="char-counter" [class.near-limit]="newReviewContent().length >= 2800">
+                    {{ newReviewContent().length }} / {{ maxReviewLength }}
+                  </span>
+
+                  <button
+                    type="submit"
+                    class="btn-publish-review"
+                    [disabled]="!newReviewContent().trim() || isSubmittingReview()"
+                  >
+                    @if (isSubmittingReview()) {
+                      <i class="fa-solid fa-circle-notch fa-spin"></i>
+                      <span>Publicando...</span>
+                    } @else {
+                      <i class="fa-solid fa-paper-plane"></i>
+                      <span>Publicar Avaliação</span>
+                    }
+                  </button>
+                </div>
+              </form>
+            } @else {
+              <div class="login-prompt-card">
+                <i class="fa-solid fa-lock"></i>
+                <div class="prompt-text">
+                  <h5>Gostaria de avaliar este drama?</h5>
+                  <p>Entre na sua conta para deixar sua nota e compartilhar sua opinião com a comunidade.</p>
+                </div>
+                <button type="button" class="btn-prompt-login" (click)="authService.openLoginModal()">
+                  <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                  <span>Entrar ou Criar Conta</span>
+                </button>
+              </div>
+            }
+          </div>
+
+          <div class="feed-header-toolbar">
+            <div class="results-info">
+              <h4>Comentários da Comunidade</h4>
+              @if (selectedScoreFilter() !== null) {
+                <span class="active-filter-badge">
+                  Filtrando por <b>{{ selectedScoreFilter() }} ★</b>
+                </span>
+              }
+            </div>
+
+            <div class="custom-dropdown-container">
+              <span class="dropdown-label">Ordenar por:</span>
+              
+              <div class="dropdown-trigger-box" (click)="toggleSortDropdown($event)">
+                <span class="selected-text">{{ sortLabels[selectedSort()] }}</span>
+                <i class="fa-solid fa-chevron-down dropdown-arrow" [class.open]="isSortDropdownOpen()"></i>
+              </div>
+
+              @if (isSortDropdownOpen()) {
+                <div class="dropdown-menu-floating" (click)="$event.stopPropagation()">
+                  <button
+                    type="button"
+                    class="menu-option-item"
+                    [class.active]="selectedSort() === 'relevant'"
+                    (click)="selectSortOption('relevant')"
+                  >
+                    <i class="fa-solid fa-thumbs-up"></i>
+                    <span>Mais Relevantes (Úteis)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="menu-option-item"
+                    [class.active]="selectedSort() === 'newest'"
+                    (click)="selectSortOption('newest')"
+                  >
+                    <i class="fa-solid fa-clock"></i>
+                    <span>Mais Recentes</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="menu-option-item"
+                    [class.active]="selectedSort() === 'oldest'"
+                    (click)="selectSortOption('oldest')"
+                  >
+                    <i class="fa-solid fa-history"></i>
+                    <span>Mais Antigos</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="menu-option-item"
+                    [class.active]="selectedSort() === 'highest'"
+                    (click)="selectSortOption('highest')"
+                  >
+                    <i class="fa-solid fa-star"></i>
+                    <span>Maior Nota</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="menu-option-item"
+                    [class.active]="selectedSort() === 'lowest'"
+                    (click)="selectSortOption('lowest')"
+                  >
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span>Menor Nota</span>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (isLoadingReviews()) {
+            <div class="reviews-loading">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Carregando comentários...</span>
+            </div>
+          } @else if (displayedReviews().length > 0) {
+            <div class="reviews-list">
+              @for (review of pagedReviews(); track review.id) {
+                <article class="review-card">
+                  <div class="review-card-header">
+                    <a [routerLink]="['/u', review.profiles?.username]" class="author-info">
+                      @if (review.profiles?.avatar_url) {
+                        <img [src]="review.profiles?.avatar_url" [alt]="review.profiles?.username" class="author-avatar" />
+                      } @else {
+                        <div class="author-avatar-fallback"><i class="fa-solid fa-user"></i></div>
+                      }
+                      <div class="author-names">
+                        <span class="author-username">{{ review.profiles?.username || 'Usuário' }}</span>
+                        <span class="review-date">{{ review.created_at | date: 'dd MMM yyyy' }}</span>
+                      </div>
+                    </a>
+
+                    <div class="score-badge">
+                      <i class="fa-solid fa-star"></i>
+                      <span>{{ review.rating }}</span>
+                    </div>
+                  </div>
+
+                  <p class="review-body">{{ review.content }}</p>
+
+                  <div class="review-card-footer">
+                    <button
+                      type="button"
+                      class="btn-helpful"
+                      [class.active]="review.has_liked"
+                      (click)="onToggleLike(review)"
+                      title="Marcar este comentário como útil"
+                    >
+                      <i class="fa-solid fa-thumbs-up"></i>
+                      <span>Útil @if (review.likes_count > 0) { ({{ review.likes_count }}) }</span>
+                    </button>
+
+                    @if (authService.currentProfile()?.id === review.user_id) {
+                      <button
+                        type="button"
+                        class="btn-delete"
+                        (click)="deleteReview(review.id)"
+                        title="Excluir minha avaliação"
+                      >
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Excluir</span>
+                      </button>
+                    }
+                  </div>
+                </article>
+              }
+            </div>
+
+            @if (displayedReviews().length > pageSize) {
+              <div class="reviews-pagination-bar">
+                <button
+                  type="button"
+                  class="btn-page-nav"
+                  [disabled]="currentPage() === 1"
+                  (click)="prevPage()"
+                  aria-label="Página anterior"
+                >
+                  <i class="fa-solid fa-chevron-left"></i>
+                  <span>Anterior</span>
+                </button>
+
+                <div class="page-numbers">
+                  @for (page of [].constructor(totalPages()); track $index; let idx = $index) {
+                    <button
+                      type="button"
+                      class="btn-page-number"
+                      [class.active]="currentPage() === idx + 1"
+                      (click)="goToPage(idx + 1)"
+                    >
+                      {{ idx + 1 }}
+                    </button>
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-page-nav"
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="nextPage()"
+                  aria-label="Próxima página"
+                >
+                  <span>Próxima</span>
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="empty-reviews-state">
+              <i class="fa-solid fa-comment-slash"></i>
+              <h3>Nenhum comentário encontrado</h3>
+              <p>
+                @if (selectedScoreFilter() !== null) {
+                  Não há avaliações com nota {{ selectedScoreFilter() }} ★. Experimente limpar o filtro.
+                } @else {
+                  Seja o primeiro a compartilhar sua opinião sobre esta produção!
+                }
+              </p>
+            </div>
+          }
+        </div>
+      </section>
     }
 
-    <!-- Aba de Elenco Completo -->
     @if (activeTab() === 'cast') {
       <div class="main-container">
         <h3 class="section-title">
@@ -249,7 +601,6 @@
       </div>
     }
 
-    <!-- Aba de Fotos -->
     @if (activeTab() === 'photos') {
       <div class="main-container">
         <h3 class="section-title">
@@ -275,15 +626,10 @@
     }
   </div>
 
-  <!-- Modal Lightbox (Tela Cheia) -->
   @if (selectedPhotoIndex() !== null && d.photos && d.photos.length > 0) {
     <div class="lightbox-backdrop" (click)="closeGallery()">
-      
-      <!-- Topo: Contador e Botões -->
       <div class="lightbox-header" (click)="$event.stopPropagation()">
-        <div class="counter">
-          {{ selectedPhotoIndex()! + 1 }} / {{ d.photos.length }}
-        </div>
+        <div class="counter">{{ selectedPhotoIndex()! + 1 }} / {{ d.photos.length }}</div>
 
         <div class="actions">
           <button
@@ -307,7 +653,6 @@
         </div>
       </div>
 
-      <!-- Seta Esquerda -->
       <button
         type="button"
         class="lightbox-nav-btn prev"
@@ -317,12 +662,10 @@
         <i class="fa-solid fa-chevron-left"></i>
       </button>
 
-      <!-- Imagem Central -->
       <div class="lightbox-image-wrapper" (click)="$event.stopPropagation()">
         <img [src]="d.photos[selectedPhotoIndex()!]" [alt]="d.title" />
       </div>
 
-      <!-- Seta Direita -->
       <button
         type="button"
         class="lightbox-nav-btn next"
@@ -331,7 +674,6 @@
       >
         <i class="fa-solid fa-chevron-right"></i>
       </button>
-
     </div>
   }
 }
