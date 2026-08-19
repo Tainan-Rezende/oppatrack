@@ -1,5 +1,4 @@
 <div class="profile-container">
-  <!-- Loading State Indicator -->
   @if (isLoadingProfile()) {
     <div class="loading-state-full">
       <i class="fa-solid fa-circle-notch fa-spin"></i>
@@ -31,7 +30,7 @@
             <div class="user-title-group">
               <h1>{{ user.username }}</h1>
 
-              <!-- Dynamic Role & Staff Badge with Floating Tooltip -->
+              <!-- Dynamic Role & Staff Badge (Exibe apenas o nome curto com tooltip para baixo) -->
               @if (user.role && user.role !== 'user') {
                 <span class="role-badge {{ user.role }}">
                   @switch (user.role) {
@@ -48,34 +47,14 @@
                       <span>Curador</span>
                     }
                   }
-                  <span class="custom-badge-tooltip">{{ getRoleTooltip(user.role) }}</span>
+                  <span class="custom-badge-tooltip-down">{{ getRoleTooltip(user.role) }}</span>
                 </span>
               } @else {
-                <!-- Standard Member Badge -->
                 <span class="user-rank-badge">
                   <i class="fa-solid fa-sparkles"></i>
                   <span>Maratonista</span>
-                  <span class="custom-badge-tooltip">{{ getRoleTooltip('user') }}</span>
+                  <span class="custom-badge-tooltip-down">{{ getRoleTooltip('user') }}</span>
                 </span>
-              }
-            </div>
-
-            <!-- Profile Action Buttons -->
-            <div class="actions-group">
-              <!-- Moderation Button (Visible for Admins/Moderators on third-party profiles) -->
-              @if (canModerate()) {
-                <button type="button" class="btn-moderate-profile" (click)="openModerationModal()">
-                  <i class="fa-solid fa-shield-halved"></i>
-                  <span>Moderar Perfil</span>
-                </button>
-              }
-
-              <!-- Edit Button (Only visible on own profile) -->
-              @if (isOwnProfile()) {
-                <a routerLink="/account/settings" class="btn-edit-profile">
-                  <i class="fa-solid fa-user-pen"></i>
-                  <span>Editar Perfil</span>
-                </a>
               }
             </div>
           </div>
@@ -91,77 +70,48 @@
           @if (user.social_links) {
             <div class="social-links-bar">
               @if (user.social_links.instagram) {
-                <a
-                  [href]="'https://instagram.com/' + user.social_links.instagram"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-pill ig"
-                  title="Instagram"
-                >
+                <a [href]="'https://instagram.com/' + user.social_links.instagram" target="_blank" rel="noopener noreferrer"
+                  class="social-pill ig" title="Instagram">
                   <i class="fa-brands fa-instagram"></i>
                   <span>&#64;{{ user.social_links.instagram }}</span>
                 </a>
               }
 
               @if (user.social_links.twitter) {
-                <a
-                  [href]="'https://x.com/' + user.social_links.twitter"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-pill x"
-                  title="X (Twitter)"
-                >
+                <a [href]="'https://x.com/' + user.social_links.twitter" target="_blank" rel="noopener noreferrer"
+                  class="social-pill x" title="X (Twitter)">
                   <i class="fa-brands fa-x-twitter"></i>
                   <span>&#64;{{ user.social_links.twitter }}</span>
                 </a>
               }
 
               @if (user.social_links.telegram) {
-                <a
-                  [href]="'https://t.me/' + user.social_links.telegram"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-pill tg"
-                  title="Telegram"
-                >
+                <a [href]="'https://t.me/' + user.social_links.telegram" target="_blank" rel="noopener noreferrer"
+                  class="social-pill tg" title="Telegram">
                   <i class="fa-brands fa-telegram"></i>
                   <span>&#64;{{ user.social_links.telegram }}</span>
                 </a>
               }
 
               @if (user.social_links.tiktok) {
-                <a
-                  [href]="'https://tiktok.com/@' + user.social_links.tiktok"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-pill tt"
-                  title="TikTok"
-                >
+                <a [href]="'https://tiktok.com/@' + user.social_links.tiktok" target="_blank" rel="noopener noreferrer"
+                  class="social-pill tt" title="TikTok">
                   <i class="fa-brands fa-tiktok"></i>
                   <span>&#64;{{ user.social_links.tiktok }}</span>
                 </a>
               }
 
               @if (user.social_links.mydramalist) {
-                <a
-                  [href]="'https://mydramalist.com/profile/' + user.social_links.mydramalist"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="social-pill mdl"
-                  title="MyDramaList"
-                >
+                <a [href]="'https://mydramalist.com/profile/' + user.social_links.mydramalist" target="_blank"
+                  rel="noopener noreferrer" class="social-pill mdl" title="MyDramaList">
                   <i class="fa-solid fa-list-check"></i>
                   <span>MDL</span>
                 </a>
               }
 
               @if (user.social_links.discord) {
-                <button
-                  type="button"
-                  class="social-pill dc"
-                  (click)="copyToClipboard(user.social_links.discord, 'discord')"
-                  title="Clique para copiar Discord Tag"
-                >
+                <button type="button" class="social-pill dc" (click)="copyToClipboard(user.social_links.discord, 'discord')"
+                  title="Clique para copiar Discord Tag">
                   <i class="fa-brands fa-discord"></i>
                   <span>{{ user.social_links.discord }}</span>
                   <span class="pill-tooltip">{{ copiedDiscord() ? 'Copiado!' : 'Copiar' }}</span>
@@ -185,10 +135,55 @@
             </div>
           }
         </div>
+
+        <!-- ==================== HERO RIGHT SIDE: ACTIONS & FEATURED BADGE ==================== -->
+        <div class="hero-right-side">
+          <div class="actions-group">
+            @if (canModerate()) {
+              <button type="button" class="btn-moderate-profile" (click)="openModerationModal()">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Moderar Perfil</span>
+              </button>
+            }
+
+            @if (isOwnProfile()) {
+              <a routerLink="/account/settings" class="btn-edit-profile">
+                <i class="fa-solid fa-user-pen"></i>
+                <span>Editar Perfil</span>
+              </a>
+            }
+          </div>
+
+          <!-- Featured Achievement Showcase Box (Apenas uma instância) -->
+          @if (user.featured_badge) {
+            <div class="featured-badge-card {{ user.featured_badge.rarity }}">
+              <div class="featured-header">
+                <i class="fa-solid fa-star"></i>
+                <span>EM DESTAQUE</span>
+              </div>
+              <div class="badge-body">
+                <div class="badge-icon-box">
+                  <i [class]="user.featured_badge.icon"></i>
+                </div>
+                <div class="badge-text">
+                  <strong class="badge-name">{{ user.featured_badge.name }}</strong>
+                  <span class="badge-desc">{{ user.featured_badge.description }}</span>
+                </div>
+              </div>
+
+              <!-- Custom Smooth Floating Tooltip -->
+              <span class="custom-achievement-tooltip">
+                <strong>{{ user.featured_badge.name }}</strong>
+                <span>{{ user.featured_badge.description }}</span>
+              </span>
+            </div>
+          }
+        </div>
+
       </div>
     </header>
 
-    <!-- ==================== 2. ENHANCED STATS CARDS GRID ==================== -->
+    <!-- ==================== 2. STATS CARDS GRID ==================== -->
     <div class="stats-grid">
       <div class="stat-card watching">
         <i class="fa-solid fa-play watermark-icon"></i>
@@ -261,20 +256,12 @@
 
           @if (favoriteDramas().length > 3) {
             <div class="slider-controls">
-              <button
-                type="button"
-                class="btn-nav prev"
-                (click)="scrollTrack('favorites-track', 'left')"
-                aria-label="Voltar favoritos"
-              >
+              <button type="button" class="btn-nav prev" (click)="scrollTrack('favorites-track', 'left')"
+                aria-label="Voltar favoritos">
                 <i class="fa-solid fa-chevron-left"></i>
               </button>
-              <button
-                type="button"
-                class="btn-nav next"
-                (click)="scrollTrack('favorites-track', 'right')"
-                aria-label="Avançar favoritos"
-              >
+              <button type="button" class="btn-nav next" (click)="scrollTrack('favorites-track', 'right')"
+                aria-label="Avançar favoritos">
                 <i class="fa-solid fa-chevron-right"></i>
               </button>
             </div>
@@ -310,11 +297,7 @@
                 }
 
                 @if (isOwnProfile()) {
-                  <button
-                    type="button"
-                    class="btn-quick-edit"
-                    (click)="openEditTracker(item, $event)"
-                  >
+                  <button type="button" class="btn-quick-edit" (click)="openEditTracker(item, $event)">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>Editar</span>
                   </button>
@@ -350,20 +333,11 @@
 
         @if (watchingDramas().length > 3) {
           <div class="slider-controls">
-            <button
-              type="button"
-              class="btn-nav prev"
-              (click)="scrollTrack('watching-track', 'left')"
-              aria-label="Voltar"
-            >
+            <button type="button" class="btn-nav prev" (click)="scrollTrack('watching-track', 'left')" aria-label="Voltar">
               <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button
-              type="button"
-              class="btn-nav next"
-              (click)="scrollTrack('watching-track', 'right')"
-              aria-label="Avançar"
-            >
+            <button type="button" class="btn-nav next" (click)="scrollTrack('watching-track', 'right')"
+              aria-label="Avançar">
               <i class="fa-solid fa-chevron-right"></i>
             </button>
           </div>
@@ -391,10 +365,7 @@
                 </div>
 
                 <div class="progress-bar-wrap">
-                  <div
-                    class="progress-fill"
-                    [style.width.%]="(item.current_episode / item.total_episodes) * 100"
-                  ></div>
+                  <div class="progress-fill" [style.width.%]="(item.current_episode / item.total_episodes) * 100"></div>
                 </div>
               </a>
 
@@ -413,11 +384,7 @@
                 </div>
 
                 @if (isOwnProfile()) {
-                  <button
-                    type="button"
-                    class="btn-quick-edit"
-                    (click)="openEditTracker(item, $event)"
-                  >
+                  <button type="button" class="btn-quick-edit" (click)="openEditTracker(item, $event)">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>Atualizar</span>
                   </button>
@@ -452,20 +419,11 @@
 
         @if (completedDramas().length > 3) {
           <div class="slider-controls">
-            <button
-              type="button"
-              class="btn-nav prev"
-              (click)="scrollTrack('completed-track', 'left')"
-              aria-label="Voltar"
-            >
+            <button type="button" class="btn-nav prev" (click)="scrollTrack('completed-track', 'left')" aria-label="Voltar">
               <i class="fa-solid fa-chevron-left"></i>
             </button>
-            <button
-              type="button"
-              class="btn-nav next"
-              (click)="scrollTrack('completed-track', 'right')"
-              aria-label="Avançar"
-            >
+            <button type="button" class="btn-nav next" (click)="scrollTrack('completed-track', 'right')"
+              aria-label="Avançar">
               <i class="fa-solid fa-chevron-right"></i>
             </button>
           </div>
@@ -508,11 +466,7 @@
                 </div>
 
                 @if (isOwnProfile()) {
-                  <button
-                    type="button"
-                    class="btn-quick-edit"
-                    (click)="openEditTracker(item, $event)"
-                  >
+                  <button type="button" class="btn-quick-edit" (click)="openEditTracker(item, $event)">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>Editar</span>
                   </button>
@@ -545,32 +499,20 @@
         </div>
 
         <div class="backlog-tabs">
-          <button
-            type="button"
-            class="tab-btn"
-            [class.active]="activeBacklogTab() === 'plan_to_watch'"
-            (click)="setBacklogTab('plan_to_watch')"
-          >
+          <button type="button" class="tab-btn" [class.active]="activeBacklogTab() === 'plan_to_watch'"
+            (click)="setBacklogTab('plan_to_watch')">
             <i class="fa-solid fa-bookmark"></i>
             <span>Quero Ver ({{ stats().planToWatch }})</span>
           </button>
 
-          <button
-            type="button"
-            class="tab-btn"
-            [class.active]="activeBacklogTab() === 'on_hold'"
-            (click)="setBacklogTab('on_hold')"
-          >
+          <button type="button" class="tab-btn" [class.active]="activeBacklogTab() === 'on_hold'"
+            (click)="setBacklogTab('on_hold')">
             <i class="fa-solid fa-pause"></i>
             <span>Em Espera ({{ stats().onHold }})</span>
           </button>
 
-          <button
-            type="button"
-            class="tab-btn"
-            [class.active]="activeBacklogTab() === 'dropped'"
-            (click)="setBacklogTab('dropped')"
-          >
+          <button type="button" class="tab-btn" [class.active]="activeBacklogTab() === 'dropped'"
+            (click)="setBacklogTab('dropped')">
             <i class="fa-solid fa-ban"></i>
             <span>Abandonados ({{ stats().dropped }})</span>
           </button>
@@ -614,11 +556,7 @@
                 </div>
 
                 @if (isOwnProfile()) {
-                  <button
-                    type="button"
-                    class="btn-quick-edit"
-                    (click)="openEditTracker(item, $event)"
-                  >
+                  <button type="button" class="btn-quick-edit" (click)="openEditTracker(item, $event)">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span>Editar</span>
                   </button>
@@ -653,16 +591,11 @@
           </div>
 
           <div class="modal-body">
-            <!-- Avatar Moderation -->
             <div class="form-group">
               <label>URL do Avatar</label>
               <div class="input-with-action">
-                <input
-                  type="text"
-                  [value]="modAvatarUrl()"
-                  (input)="modAvatarUrl.set($any($event.target).value)"
-                  placeholder="https://..."
-                />
+                <input type="text" [value]="modAvatarUrl()" (input)="modAvatarUrl.set($any($event.target).value)"
+                  placeholder="https://..." />
                 @if (modAvatarUrl()) {
                   <button type="button" class="btn-clear-avatar" (click)="clearAvatar()" title="Resetar Avatar">
                     <i class="fa-solid fa-trash-can"></i>
@@ -671,15 +604,10 @@
               </div>
             </div>
 
-            <!-- Role Assignment (Only visible for Admins) -->
             @if (isAdmin()) {
               <div class="form-group">
                 <label>Cargo do Usuário (Role)</label>
-                <select
-                  [value]="modRole()"
-                  (change)="modRole.set($any($event.target).value)"
-                  class="select-role"
-                >
+                <select [value]="modRole()" (change)="modRole.set($any($event.target).value)" class="select-role">
                   <option value="user">Usuário Comum</option>
                   <option value="curator">Curador Oficial</option>
                   <option value="moderator">Moderador</option>
@@ -688,75 +616,44 @@
               </div>
             }
 
-            <!-- Bio Moderation -->
             <div class="form-group">
               <label>Biografia do Perfil</label>
-              <textarea
-                rows="3"
-                [value]="modBio()"
-                (input)="modBio.set($any($event.target).value)"
-                placeholder="Biografia do usuário..."
-                maxlength="500"
-              ></textarea>
+              <textarea rows="3" [value]="modBio()" (input)="modBio.set($any($event.target).value)"
+                placeholder="Biografia do usuário..." maxlength="500"></textarea>
             </div>
 
-            <!-- Social Links Moderation -->
             <div class="form-group">
               <label>Redes Sociais (Handles / Links)</label>
               <div class="socials-mod-grid">
                 <div class="social-input-row">
                   <i class="fa-brands fa-instagram"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().instagram || ''"
-                    (input)="modSocials().instagram = $any($event.target).value"
-                    placeholder="Instagram handle"
-                  />
+                  <input type="text" [value]="modSocials().instagram || ''"
+                    (input)="modSocials().instagram = $any($event.target).value" placeholder="Instagram handle" />
                 </div>
                 <div class="social-input-row">
                   <i class="fa-brands fa-x-twitter"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().twitter || ''"
-                    (input)="modSocials().twitter = $any($event.target).value"
-                    placeholder="X / Twitter handle"
-                  />
+                  <input type="text" [value]="modSocials().twitter || ''"
+                    (input)="modSocials().twitter = $any($event.target).value" placeholder="X / Twitter handle" />
                 </div>
                 <div class="social-input-row">
                   <i class="fa-brands fa-telegram"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().telegram || ''"
-                    (input)="modSocials().telegram = $any($event.target).value"
-                    placeholder="Telegram username"
-                  />
+                  <input type="text" [value]="modSocials().telegram || ''"
+                    (input)="modSocials().telegram = $any($event.target).value" placeholder="Telegram username" />
                 </div>
                 <div class="social-input-row">
                   <i class="fa-brands fa-tiktok"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().tiktok || ''"
-                    (input)="modSocials().tiktok = $any($event.target).value"
-                    placeholder="TikTok handle"
-                  />
+                  <input type="text" [value]="modSocials().tiktok || ''"
+                    (input)="modSocials().tiktok = $any($event.target).value" placeholder="TikTok handle" />
                 </div>
                 <div class="social-input-row">
                   <i class="fa-solid fa-list-check"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().mydramalist || ''"
-                    (input)="modSocials().mydramalist = $any($event.target).value"
-                    placeholder="MyDramaList user"
-                  />
+                  <input type="text" [value]="modSocials().mydramalist || ''"
+                    (input)="modSocials().mydramalist = $any($event.target).value" placeholder="MyDramaList user" />
                 </div>
                 <div class="social-input-row">
                   <i class="fa-brands fa-discord"></i>
-                  <input
-                    type="text"
-                    [value]="modSocials().discord || ''"
-                    (input)="modSocials().discord = $any($event.target).value"
-                    placeholder="Discord tag"
-                  />
+                  <input type="text" [value]="modSocials().discord || ''"
+                    (input)="modSocials().discord = $any($event.target).value" placeholder="Discord tag" />
                 </div>
               </div>
             </div>
@@ -766,12 +663,7 @@
             <button type="button" class="btn-cancel" (click)="closeModerationModal()">
               Cancelar
             </button>
-            <button
-              type="button"
-              class="btn-save"
-              [disabled]="isSavingModeration()"
-              (click)="saveModerationChanges()"
-            >
+            <button type="button" class="btn-save" [disabled]="isSavingModeration()" (click)="saveModerationChanges()">
               @if (isSavingModeration()) {
                 <i class="fa-solid fa-circle-notch fa-spin"></i>
                 <span>Salvando...</span>
@@ -786,7 +678,6 @@
     }
 
   } @else {
-    <!-- Not Found State -->
     <div class="not-found-state">
       <div class="not-found-content">
         <div class="glitch-icon">
@@ -794,7 +685,7 @@
         </div>
         <h2>Ops! Perfil não encontrado</h2>
         <p>O nome de usuário pode ter sido alterado ou a conta não existe.</p>
-        
+
         <div class="action-buttons">
           <a routerLink="/home" class="btn-secondary">
             <i class="fa-solid fa-house"></i>

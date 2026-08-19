@@ -1,5 +1,5 @@
 // ==========================================================================
-// PROFILE VIEW STYLING (PREMIUM POLISHED DESIGN & MODERATION SYSTEM)
+// PROFILE VIEW STYLING (PREMIUM POLISHED DESIGN)
 // ==========================================================================
 
 :host {
@@ -49,6 +49,7 @@
       padding: 1.75rem 1.25rem;
     }
 
+    // Top Ambient Mesh Gradient
     .hero-ambient-banner {
       position: absolute;
       top: 0;
@@ -76,6 +77,7 @@
       }
     }
 
+    // Avatar Box with Glowing Rings
     .avatar-box {
       position: relative;
       width: 115px;
@@ -146,10 +148,28 @@
           letter-spacing: -0.02em;
         }
 
-        // Shared Tooltip on Badges
-        .user-rank-badge,
+        // Standard Rank Badge
+        .user-rank-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          padding: 0.2rem 0.6rem;
+          border-radius: 2rem;
+          background: rgba($accent-gold, 0.12);
+          border: 1px solid rgba($accent-gold, 0.35);
+          color: $accent-gold;
+          font-size: 0.725rem;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+
+          i {
+            font-size: 0.65rem;
+          }
+        }
+
+        // Dynamic Staff Role Badges (Admin, Moderator, Curator)
         .role-badge {
-          position: relative;
           display: inline-flex;
           align-items: center;
           gap: 0.35rem;
@@ -159,66 +179,9 @@
           font-weight: 700;
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          cursor: default;
-          user-select: none;
+          cursor: help;
           transition: all 0.2s ease;
 
-          // Soft Clean Dark Floating Tooltip
-          .custom-badge-tooltip {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%) translateY(4px);
-            background: #18181b;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #e4e4e7;
-            font-size: 0.725rem;
-            font-weight: 500;
-            letter-spacing: normal;
-            text-transform: none;
-            padding: 0.35rem 0.7rem;
-            border-radius: 0.4rem;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            visibility: hidden;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                        transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                        visibility 0.2s ease;
-
-            &::after {
-              content: '';
-              position: absolute;
-              top: 100%;
-              left: 50%;
-              transform: translateX(-50%);
-              border-width: 4px;
-              border-style: solid;
-              border-color: #18181b transparent transparent transparent;
-            }
-          }
-
-          &:hover .custom-badge-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-          }
-        }
-
-        .user-rank-badge {
-          background: rgba(251, 191, 36, 0.08);
-          border: 1px solid rgba(251, 191, 36, 0.22);
-          color: #fbbf24;
-
-          i {
-            font-size: 0.65rem;
-            color: #fbbf24;
-          }
-        }
-
-        .role-badge {
           i {
             font-size: 0.7rem;
           }
@@ -272,57 +235,6 @@
           }
         }
       }
-
-      .actions-group {
-        display: flex;
-        align-items: center;
-        gap: 0.55rem;
-
-        .btn-moderate-profile {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          padding: 0.45rem 1rem;
-          border-radius: 0.45rem;
-          background: rgba(239, 68, 68, 0.12);
-          border: 1px solid rgba(239, 68, 68, 0.3);
-          color: #fca5a5;
-          font-size: 0.8rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fff;
-            border-color: rgba(239, 68, 68, 0.5);
-            transform: translateY(-1px);
-          }
-        }
-
-        .btn-edit-profile {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          padding: 0.45rem 1rem;
-          border-radius: 0.45rem;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: $text-secondary;
-          font-size: 0.8rem;
-          font-weight: 600;
-          text-decoration: none;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.25);
-            transform: translateY(-1px);
-          }
-        }
-      }
     }
 
     .user-bio {
@@ -338,6 +250,7 @@
       }
     }
 
+    // Social Media Links
     .social-links-bar {
       display: flex;
       flex-wrap: wrap;
@@ -403,6 +316,7 @@
       }
     }
 
+    // Preferences Section
     .preferred-countries {
       display: flex;
       align-items: center;
@@ -1153,255 +1067,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // 7. Staff Moderation Modal Styling
-  // --------------------------------------------------------------------------
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    padding: 1rem;
-    animation: fadeIn 0.2s ease;
-
-    .mod-modal {
-      width: 100%;
-      max-width: 520px;
-      background: #121215;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 1rem;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      overflow: hidden;
-      animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-
-      .modal-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.25rem 1.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-        .header-title {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-
-          i {
-            font-size: 1.35rem;
-            color: $accent-red;
-          }
-
-          h3 {
-            margin: 0;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-          }
-
-          small {
-            font-size: 0.75rem;
-            color: $text-secondary;
-            b { color: #fff; }
-          }
-        }
-
-        .btn-close-modal {
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.05);
-          border: none;
-          color: $text-secondary;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s ease;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-          }
-        }
-      }
-
-      .modal-body {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.15rem;
-        max-height: 68vh;
-        overflow-y: auto;
-
-        &::-webkit-scrollbar { width: 5px; }
-        &::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 0.4rem;
-
-          label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: $text-secondary;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
-          }
-
-          input, textarea, select {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.45rem;
-            padding: 0.65rem 0.85rem;
-            color: #fff;
-            font-size: 0.85rem;
-            font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s ease;
-            box-sizing: border-box;
-
-            &:focus {
-              border-color: rgba($accent-red, 0.6);
-            }
-          }
-
-          textarea {
-            resize: vertical;
-            line-height: 1.45;
-          }
-
-          .input-with-action {
-            display: flex;
-            gap: 0.5rem;
-
-            .btn-clear-avatar {
-              padding: 0 0.85rem;
-              background: rgba(239, 68, 68, 0.15);
-              border: 1px solid rgba(239, 68, 68, 0.3);
-              color: #f87171;
-              border-radius: 0.45rem;
-              cursor: pointer;
-              transition: all 0.2s ease;
-
-              &:hover {
-                background: rgba(239, 68, 68, 0.25);
-                color: #fff;
-              }
-            }
-          }
-
-          .select-role {
-            background-color: #0c0c0e;
-            cursor: pointer;
-          }
-
-          .socials-mod-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.5rem;
-
-            @media (max-width: 500px) {
-              grid-template-columns: 1fr;
-            }
-
-            .social-input-row {
-              display: flex;
-              align-items: center;
-              gap: 0.5rem;
-              background: rgba(0, 0, 0, 0.35);
-              border: 1px solid rgba(255, 255, 255, 0.08);
-              border-radius: 0.45rem;
-              padding: 0 0.65rem;
-
-              i {
-                font-size: 0.9rem;
-                color: $text-muted;
-                width: 16px;
-                text-align: center;
-              }
-
-              input {
-                border: none;
-                background: transparent;
-                padding: 0.55rem 0.25rem;
-                font-size: 0.8rem;
-
-                &:focus {
-                  border: none;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      .modal-footer {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 0.75rem;
-        padding: 1rem 1.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
-
-        .btn-cancel {
-          padding: 0.55rem 1.15rem;
-          border-radius: 0.45rem;
-          background: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          color: $text-secondary;
-          font-size: 0.825rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-          }
-        }
-
-        .btn-save {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          padding: 0.55rem 1.35rem;
-          border-radius: 0.45rem;
-          background: $accent-red;
-          border: 1px solid $accent-red;
-          color: #fff;
-          font-size: 0.825rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-
-          &:hover:not(:disabled) {
-            background: #e63e3e;
-            transform: translateY(-1px);
-          }
-
-          &:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-          }
-        }
-      }
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // 8. Loading & Not Found States
+  // 7. Loading & Not Found States
   // --------------------------------------------------------------------------
   .loading-state-full {
     display: flex;
@@ -1529,14 +1195,292 @@
     }
   }
 
-  // Keyframes
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  // --------------------------------------------------------------------------
+  // HERO RIGHT SIDE & ACTIONS (COM O CARD DE DESTAQUE CORRIGIDO)
+  // --------------------------------------------------------------------------
+  .hero-right-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.85rem;
+    margin-left: auto;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+      align-items: center;
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .actions-group {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+
+      .btn-edit-profile {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 1rem;
+        border-radius: 0.45rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: $text-secondary;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          color: #fff;
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.25);
+          transform: translateY(-1px);
+        }
+      }
+
+      .btn-moderate-profile {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.45rem 1rem;
+        border-radius: 0.45rem;
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.2);
+          color: #fff;
+          border-color: rgba(239, 68, 68, 0.5);
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    .featured-badge-card {
+      position: relative;
+      width: 250px;
+      padding: 0.85rem 1rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transition: all 0.25s ease;
+      cursor: default;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      // Custom Floating Tooltip (Centered & Smooth)
+      .custom-achievement-tooltip {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: rgba(18, 18, 22, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f4f4f6;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        white-space: nowrap;
+        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0.2s ease;
+
+        strong {
+          color: #fff;
+          font-weight: 700;
+          font-size: 0.8rem;
+          text-align: center;
+        }
+
+        span {
+          color: $text-secondary;
+          font-weight: 400;
+          text-align: center;
+        }
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          border-width: 5px;
+          border-style: solid;
+          border-color: rgba(18, 18, 22, 0.95) transparent transparent transparent;
+        }
+      }
+
+      &:hover .custom-achievement-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .featured-header {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.625rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: $text-muted;
+        text-transform: uppercase;
+
+        i {
+          font-size: 0.6rem;
+          color: $accent-gold;
+        }
+      }
+
+      .badge-body {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .badge-icon-box {
+          width: 40px;
+          height: 40px;
+          border-radius: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          flex-shrink: 0;
+        }
+
+        .badge-text {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          flex: 1;
+
+          .badge-name {
+            font-size: 0.825rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .badge-desc {
+            font-size: 0.7rem;
+            color: $text-secondary;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      &.legendary {
+        border-color: rgba($accent-gold, 0.4);
+        background: radial-gradient(circle at top right, rgba($accent-gold, 0.12) 0%, rgba(14, 14, 18, 0.95) 100%);
+        .badge-icon-box { color: $accent-gold; border-color: rgba($accent-gold, 0.4); }
+        .badge-name { color: #fde047; }
+      }
+
+      &.epic {
+        border-color: rgba($accent-purple, 0.4);
+        background: radial-gradient(circle at top right, rgba($accent-purple, 0.12) 0%, rgba(14, 14, 18, 0.95) 100%);
+        .badge-icon-box { color: $accent-purple; border-color: rgba($accent-purple, 0.4); }
+        .badge-name { color: #e9d5ff; }
+      }
+
+      &.rare {
+        border-color: rgba($accent-blue, 0.4);
+        background: radial-gradient(circle at top right, rgba($accent-blue, 0.12) 0%, rgba(14, 14, 18, 0.95) 100%);
+        .badge-icon-box { color: $accent-blue; border-color: rgba($accent-blue, 0.4); }
+        .badge-name { color: #bfdbfe; }
+      }
+
+      &.common {
+        border-color: rgba(255, 255, 255, 0.15);
+        .badge-icon-box { color: #e4e4e7; }
+      }
+    }
   }
 
-  @keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(20px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+  // --------------------------------------------------------------------------
+  // CUSTOM TOOLTIP DOWNWARDS (Para as Badges de Cargo)
+  // --------------------------------------------------------------------------
+  .user-rank-badge,
+  .role-badge {
+    position: relative;
+    cursor: default;
+    user-select: none;
+
+    .custom-badge-tooltip-down {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-4px);
+      background: rgba(18, 18, 22, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #f4f4f6;
+      font-size: 0.725rem;
+      font-weight: 500;
+      letter-spacing: normal;
+      text-transform: none;
+      padding: 0.35rem 0.7rem;
+      border-radius: 0.4rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 999;
+      transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.2s ease;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 4px;
+        border-style: solid;
+        border-color: transparent transparent rgba(18, 18, 22, 0.95) transparent;
+      }
+    }
+
+    &:hover .custom-badge-tooltip-down {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 }

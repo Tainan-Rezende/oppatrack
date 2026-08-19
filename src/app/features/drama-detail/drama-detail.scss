@@ -1439,7 +1439,7 @@
             line-height: 1.65;
             color: $text-primary;
             word-break: break-word;
-            white-space: pre-line; // Preserves newlines and line breaks typed by the user
+            white-space: pre-line;
           }
 
           .review-card-footer {
@@ -1474,21 +1474,29 @@
                 color: #60a5fa;
               }
             }
+          }
 
-            .btn-delete {
-              display: inline-flex;
-              align-items: center;
-              gap: 0.35rem;
-              background: transparent;
-              border: none;
-              color: $text-muted;
-              font-size: 0.725rem;
-              cursor: pointer;
-              transition: color 0.2s ease;
+          // CORRIGIDO: Força o botão a não esticar horizontalmente e alinha à direita se estiver solto fora do footer
+          .btn-delete {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.65rem;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 2rem;
+            color: #f87171;
+            font-size: 0.725rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: fit-content;
+            align-self: flex-end;
+            transition: all 0.2s ease;
 
-              &:hover {
-                color: #ef4444;
-              }
+            &:hover {
+              background: rgba(239, 68, 68, 0.18);
+              color: #ef4444;
+              border-color: rgba(239, 68, 68, 0.4);
             }
           }
         }

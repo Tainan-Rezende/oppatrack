@@ -4,6 +4,10 @@
   padding: 1.5rem 0 3.5rem 0;
 
   $accent-red: #ff4d4d;
+  $accent-gold: #fbbf24;
+  $accent-blue: #60a5fa;
+  $accent-green: #4ade80;
+  $accent-purple: #c084fc;
   $card-bg: #141418;
   $card-border: rgba(255, 255, 255, 0.1);
   $input-bg: #0e0e12;
@@ -500,6 +504,241 @@
           opacity: 0.5;
           cursor: not-allowed;
           transform: none;
+        }
+      }
+    }
+  }
+
+  // ============================================================================
+  // ACHIEVEMENTS GALLERY & SELECTION TAB
+  // ============================================================================
+  .achievements-settings-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    .achievements-summary-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+
+      .summary-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.85rem;
+        color: #fff;
+
+        i {
+          color: $accent-gold;
+        }
+
+        b {
+          color: $accent-gold;
+        }
+      }
+
+      .hint-text {
+        font-size: 0.75rem;
+        color: $text-muted;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+    }
+
+    .achievements-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 4rem 0;
+      color: $text-muted;
+
+      i {
+        font-size: 1.5rem;
+        color: $accent-red;
+      }
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+
+      @media (max-width: 650px) {
+        grid-template-columns: 1fr;
+      }
+
+      .achievement-card {
+        position: relative;
+        background: #101014;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+
+        &:hover:not(.locked) {
+          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.25);
+          background: #16161b;
+        }
+
+        .badge-icon-wrap {
+          width: 44px;
+          height: 44px;
+          border-radius: 0.6rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          flex-shrink: 0;
+        }
+
+        .badge-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          flex: 1;
+          min-width: 0;
+
+          .badge-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+
+            .name {
+              font-size: 0.85rem;
+              font-weight: 700;
+              color: #fff;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            .rarity-tag {
+              font-size: 0.625rem;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              padding: 0.1rem 0.4rem;
+              border-radius: 0.25rem;
+
+              &.legendary {
+                color: #fde047;
+                background: rgba(251, 191, 36, 0.15);
+              }
+
+              &.epic {
+                color: #d8b4fe;
+                background: rgba(192, 132, 252, 0.15);
+              }
+
+              &.rare {
+                color: #93c5fd;
+                background: rgba(96, 165, 250, 0.15);
+              }
+
+              &.common {
+                color: #d4d4d8;
+                background: rgba(255, 255, 255, 0.08);
+              }
+            }
+          }
+
+          .description {
+            margin: 0;
+            font-size: 0.725rem;
+            color: $text-muted;
+            line-height: 1.35;
+          }
+        }
+
+        .featured-indicator {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.25rem 0.55rem;
+          border-radius: 2rem;
+          font-size: 0.65rem;
+          font-weight: 700;
+          background: rgba(255, 255, 255, 0.05);
+          color: $text-muted;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          transition: all 0.2s ease;
+
+          &.active {
+            background: rgba($accent-gold, 0.15);
+            border-color: rgba($accent-gold, 0.5);
+            color: $accent-gold;
+          }
+        }
+
+        // Rarities when unlocked
+        &.legendary:not(.locked) {
+          border-color: rgba($accent-gold, 0.35);
+
+          .badge-icon-wrap {
+            color: $accent-gold;
+            border-color: rgba($accent-gold, 0.4);
+          }
+        }
+
+        &.epic:not(.locked) {
+          border-color: rgba($accent-purple, 0.35);
+
+          .badge-icon-wrap {
+            color: $accent-purple;
+            border-color: rgba($accent-purple, 0.4);
+          }
+        }
+
+        &.rare:not(.locked) {
+          border-color: rgba($accent-blue, 0.35);
+
+          .badge-icon-wrap {
+            color: $accent-blue;
+            border-color: rgba($accent-blue, 0.4);
+          }
+        }
+
+        &.common:not(.locked) {
+          .badge-icon-wrap {
+            color: #fff;
+          }
+        }
+
+        // Locked State
+        &.locked {
+          opacity: 0.45;
+          cursor: not-allowed;
+          filter: grayscale(0.8);
+          border-style: dashed;
+
+          .locked-icon {
+            color: $text-muted;
+            font-size: 1rem;
+          }
+        }
+
+        // Active Featured Highlight
+        &.featured {
+          border-color: rgba($accent-gold, 0.8) !important;
+          box-shadow: 0 0 16px rgba($accent-gold, 0.25);
         }
       }
     }

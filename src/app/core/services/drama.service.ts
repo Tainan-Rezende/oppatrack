@@ -220,7 +220,7 @@ export class DramaService {
           // Pega os 16 doramas da pagina para extrair o elenco
           const topDramas = dramaRes.results.slice(0, 16);
 
-          const creditsRequests = topDramas.map((drama) =>
+          const creditsRequests = (topDramas || []).map((drama) => 
             this.http.get<{ cast: any[] }>(`${this.baseUrl}/tv/${drama.id}/credits`).pipe(
               map((creditRes) => ({
                 dramaTitle: drama.name,
@@ -296,7 +296,7 @@ export class DramaService {
             .sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
           return {
-            results: filteredActors.map((p) => {
+            results: (filteredActors || []).map((p) => {
               const names = formatActorNames(p.name, p.original_name, p.also_known_as || []);
               return {
                 id: String(p.id),

@@ -1,7 +1,7 @@
 <div class="settings-container">
   <header class="settings-header">
     <h1>Configurações da Conta</h1>
-    <p>Gerencie sua identidade, redes sociais e preferências de exibição</p>
+    <p>Gerencie sua identidade, redes sociais, conquistas e preferências</p>
   </header>
 
   @if (successMessage()) {
@@ -19,7 +19,7 @@
   }
 
   <div class="settings-layout">
-    <!-- Menu Lateral de Abas -->
+    <!-- Navigation Sidebar -->
     <aside class="settings-sidebar">
       <button
         type="button"
@@ -29,6 +29,16 @@
       >
         <i class="fa-solid fa-user-gear"></i>
         <span>Perfil & Redes</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-tab"
+        [class.active]="activeTab() === 'achievements'"
+        (click)="setTab('achievements')"
+      >
+        <i class="fa-solid fa-trophy"></i>
+        <span>Conquistas</span>
       </button>
 
       <button
@@ -52,19 +62,17 @@
       </button>
     </aside>
 
-    <!-- Painel de Conteúdo -->
+    <!-- Main Settings Panel -->
     <section class="settings-panel">
-      <!-- ABA 1: PERFIL & REDES SOCIAIS -->
-      <!-- ABA 1: PERFIL & REDES SOCIAIS -->
+      
+      <!-- ==================== TAB 1: PERFIL & REDES SOCIAIS ==================== -->
       @if (activeTab() === 'profile') {
         <form class="settings-form" (submit)="$event.preventDefault(); onSaveProfile()">
-          
           <div class="section-title">
             <h2>Identidade Pública</h2>
             <p>Essas informações aparecerão no seu perfil e listas compartilhadas</p>
           </div>
 
-          <!-- Upload de Foto de Perfil -->
           <div class="avatar-upload-card">
             <div class="avatar-preview-wrapper" (click)="avatarInput.click()">
               @if (avatarUrl()) {
@@ -108,7 +116,6 @@
             </div>
           </div>
 
-          <!-- Bloco do Código de Perfil -->
           <div class="profile-code-box">
             <div class="code-info">
               <span class="lbl">Seu Código de Perfil</span>
@@ -235,7 +242,67 @@
         </form>
       }
 
-      <!-- ABA 2: SEGURANÇA & SENHA -->
+      <!-- ==================== TAB 2: CONQUISTAS & EMBLEMAS ==================== -->
+      @if (activeTab() === 'achievements') {
+        <div class="achievements-settings-panel">
+          <div class="section-title">
+            <h2>Galeria de Conquistas & Emblemas</h2>
+            <p>Acompanhe seus marcos desbloqueados e selecione uma conquista para fixar em destaque no seu perfil</p>
+          </div>
+
+          <div class="achievements-summary-bar">
+            <div class="summary-pill">
+              <i class="fa-solid fa-trophy"></i>
+              <span>Desbloqueadas: <b>{{ userAchievements().length }} / {{ catalogAchievements().length }}</b></span>
+            </div>
+            <span class="hint-text"><i class="fa-solid fa-circle-info"></i> Clique em uma conquista desbloqueada para definir como destaque no perfil.</span>
+          </div>
+
+          @if (isLoadingAchievements()) {
+            <div class="achievements-loading">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+              <span>Carregando suas conquistas...</span>
+            </div>
+          } @else {
+            <div class="achievements-grid">
+              @for (badge of catalogAchievements(); track badge.id) {
+                <div
+                  class="achievement-card {{ badge.rarity }}"
+                  [class.locked]="!isUnlocked(badge.id)"
+                  [class.featured]="featuredBadgeId() === badge.id"
+                  (click)="toggleFeaturedBadge(badge)"
+                  [title]="isUnlocked(badge.id) ? 'Clique para destacar / desmarcar no perfil' : 'Conquista bloqueada'"
+                >
+                  <div class="badge-icon-wrap">
+                    @if (isUnlocked(badge.id)) {
+                      <i [class]="badge.icon"></i>
+                    } @else {
+                      <i class="fa-solid fa-lock locked-icon"></i>
+                    }
+                  </div>
+
+                  <div class="badge-content">
+                    <div class="badge-header-row">
+                      <strong class="name">{{ badge.name }}</strong>
+                      <span class="rarity-tag {{ badge.rarity }}">{{ badge.rarity }}</span>
+                    </div>
+                    <p class="description">{{ badge.description }}</p>
+                  </div>
+
+                  @if (isUnlocked(badge.id)) {
+                    <div class="featured-indicator" [class.active]="featuredBadgeId() === badge.id">
+                      <i class="fa-solid fa-star"></i>
+                      <span>{{ featuredBadgeId() === badge.id ? 'Destaque Ativo' : 'Destacar' }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ==================== TAB 3: SEGURANÇA & SENHA ==================== -->
       @if (activeTab() === 'security') {
         <form class="settings-form" (submit)="$event.preventDefault(); onUpdatePassword()">
           <div class="section-title">
@@ -287,7 +354,7 @@
         </form>
       }
 
-      <!-- ABA 3: PREFERÊNCIAS DE CATÁLOGO -->
+      <!-- ==================== TAB 4: PREFERÊNCIAS DE CATÁLOGO ==================== -->
       @if (activeTab() === 'preferences') {
         <div class="settings-form">
           <div class="section-title">

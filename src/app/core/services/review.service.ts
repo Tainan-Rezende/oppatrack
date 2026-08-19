@@ -28,7 +28,8 @@ export class ReviewService {
    * @param dramaId Unique TMDB drama identifier string.
    * @returns A promise resolving to an array of formatted DramaReview entities.
    */
-  public async getDramaReviews(dramaId: string): Promise<DramaReview[]> {
+  public async getDramaReviews(dramaId: string | number): Promise<DramaReview[]> {
+    const cleanDramaId = String(dramaId).trim();
     const currentUserId = this.authService.currentProfile()?.id;
 
     const { data: reviews, error } = await this.supabase
@@ -41,17 +42,17 @@ export class ReviewService {
         content,
         created_at,
         updated_at,
-        profiles (
+        profiles!fk_drama_reviews_profile (
           id,
           username,
           avatar_url,
           role
         ),
-        review_likes (
+        drama_review_likes (
           user_id
         )
       `)
-      .eq('drama_id', dramaId)
+      .eq('drama_id', cleanDramaId)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -60,7 +61,7 @@ export class ReviewService {
     }
 
     return (reviews || []).map((row: any) => {
-      const likesList: Array<{ user_id: string }> = row.review_likes || [];
+      const likesList: Array<{ user_id: string }> = row.drama_review_likes || [];
       const hasLiked = currentUserId ? likesList.some((l) => l.user_id === currentUserId) : false;
       const profileData = Array.isArray(row.profiles) ? row.profiles[0] : row.profiles;
 
@@ -108,7 +109,7 @@ export class ReviewService {
         content,
         created_at,
         updated_at,
-        profiles (
+        profiles!fk_drama_reviews_profile (
           id,
           username,
           avatar_url,
@@ -172,7 +173,7 @@ export class ReviewService {
 
     if (hasLiked) {
       const { error } = await this.supabase
-        .from('review_likes')
+        .from('drama_review_likes')
         .delete()
         .eq('review_id', reviewId)
         .eq('user_id', currentUser.id);
@@ -183,7 +184,7 @@ export class ReviewService {
       }
     } else {
       const { error } = await this.supabase
-        .from('review_likes')
+        .from('drama_review_likes')
         .insert({
           review_id: reviewId,
           user_id: currentUser.id,

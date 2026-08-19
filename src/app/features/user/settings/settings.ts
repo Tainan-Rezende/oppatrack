@@ -1,13 +1,19 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AchievementService } from '../../../core/services/achievement.service';
 import { AvatarCropper } from '../../../shared/components/avatar-cropper/avatar-cropper';
 import { SocialLinks } from '../../../models/user.model';
+import { Achievement, UserAchievement } from '../../../models/achievement.model';
 
-type SettingsTab = 'profile' | 'security' | 'preferences';
+type SettingsTab = 'profile' | 'achievements' | 'security' | 'preferences';
 
+/**
+ * Settings Component
+ * Manages user profile identity, social handles, achievement gallery,
+ * password updates, and regional drama preferences.
+ */
 @Component({
   selector: 'app-settings',
   imports: [CommonModule, FormsModule, AvatarCropper],
@@ -16,6 +22,7 @@ type SettingsTab = 'profile' | 'security' | 'preferences';
 })
 export class Settings {
   public readonly authService = inject(AuthService);
+  public readonly achievementService = inject(AchievementService);
 
   public activeTab = signal<SettingsTab>('profile');
   public isSaving = signal<boolean>(false);
@@ -23,15 +30,15 @@ export class Settings {
   public successMessage = signal<string | null>(null);
   public errorMessage = signal<string | null>(null);
 
-  // Controle de Recorte
+  // Avatar Cropping State
   public selectedFileForCrop = signal<File | null>(null);
 
-  // Avatar & Perfil
+  // Avatar & Profile Form State
   public avatarUrl = signal<string | null>(null);
   public username = signal<string>('');
   public bio = signal<string>('');
 
-  // Redes Sociais
+  // Social Links State
   public instagram = signal<string>('');
   public twitter = signal<string>('');
   public tiktok = signal<string>('');
@@ -39,12 +46,11 @@ export class Settings {
   public discord = signal<string>('');
   public mydramalist = signal<string>('');
 
-  // Senha
-  public currentPassword = signal<string>('');
+  // Password Update State
   public newPassword = signal<string>('');
   public confirmPassword = signal<string>('');
 
-  // Países Preferidos
+  // Regional Preferences
   public availableCountries = [
     { code: 'KR', label: 'Coreia do Sul' },
     { code: 'JP', label: 'Japão' },
@@ -54,6 +60,12 @@ export class Settings {
   ];
   public selectedCountries = signal<string[]>(['KR', 'JP', 'CN']);
 
+  // Achievements State
+  public catalogAchievements = signal<Achievement[]>([]);
+  public userAchievements = signal<UserAchievement[]>([]);
+  public featuredBadgeId = signal<string | null>(null);
+  public isLoadingAchievements = signal<boolean>(false);
+
   constructor() {
     effect(() => {
       const profile = this.authService.currentProfile();
@@ -62,6 +74,7 @@ export class Settings {
         this.username.set(profile.username || '');
         this.bio.set(profile.bio || '');
         this.selectedCountries.set(profile.preferred_countries || ['KR', 'JP', 'CN']);
+        this.featuredBadgeId.set(profile.featured_badge_id || null);
 
         const links = profile.social_links || {};
         this.instagram.set(links.instagram || '');
@@ -74,13 +87,75 @@ export class Settings {
     });
   }
 
-  public setTab(tab: SettingsTab): void {
+  /**
+   * Switches active settings navigation tab.
+   *
+   * @param tab Target SettingsTab identifier.
+   */
+  public async setTab(tab: SettingsTab): Promise<void> {
     this.activeTab.set(tab);
     this.successMessage.set(null);
     this.errorMessage.set(null);
+
+    if (tab === 'achievements') {
+      await this.loadAchievementsData();
+    }
   }
 
-  // 1. Ao selecionar a imagem no computador, abre o cropper
+  /**
+   * Loads the global achievement catalog and user unlocked badges.
+   */
+  public async loadAchievementsData(): Promise<void> {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    this.isLoadingAchievements.set(true);
+    try {
+      const [allBadges, unlocked] = await Promise.all([
+        this.achievementService.getAllAchievements(),
+        this.achievementService.getUserAchievements(user.id),
+      ]);
+
+      this.catalogAchievements.set(allBadges);
+      this.userAchievements.set(unlocked);
+    } catch (err: any) {
+      console.error('[Settings] Error loading achievements data:', err);
+    } finally {
+      this.isLoadingAchievements.set(false);
+    }
+  }
+
+  /**
+   * Checks if an achievement from the catalog has been unlocked by the active user.
+   *
+   * @param achievementId Unique identifier string.
+   */
+  public isUnlocked(achievementId: string): boolean {
+    return this.userAchievements().some((u) => u.achievement_id === achievementId);
+  }
+
+  /**
+   * Sets or unsets an achievement as the featured showcase badge on profile hero.
+   *
+   * @param badge Target achievement entity.
+   */
+  public async toggleFeaturedBadge(badge: Achievement): Promise<void> {
+    if (!this.isUnlocked(badge.id)) return;
+
+    const currentPin = this.featuredBadgeId();
+    const newPin = currentPin === badge.id ? null : badge.id;
+
+    try {
+      await this.achievementService.setFeaturedBadge(newPin);
+      this.featuredBadgeId.set(newPin);
+      this.successMessage.set(
+        newPin ? `Conquista "${badge.name}" destacada no seu perfil!` : 'Destaque de conquista removido.'
+      );
+    } catch (err: any) {
+      this.errorMessage.set('Erro ao alterar conquista em destaque.');
+    }
+  }
+
   public onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -92,10 +167,9 @@ export class Settings {
     }
 
     this.selectedFileForCrop.set(file);
-    input.value = ''; // Reseta para permitir escolher o mesmo arquivo novamente
+    input.value = '';
   }
 
-  // 2. Recebe a imagem já recortada e envia para o Supabase
   public async uploadCroppedAvatar(croppedBlob: Blob): Promise<void> {
     const user = this.authService.currentUser();
     if (!user) return;
@@ -107,7 +181,6 @@ export class Settings {
     try {
       const filePath = `${user.id}/avatar.webp`;
 
-      // Upload do WebP já recortado
       const { error: uploadError } = await this.authService
         .getSupabaseClient()
         .storage.from('avatars')

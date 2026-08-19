@@ -12,7 +12,7 @@ export type BacklogTab = 'plan_to_watch' | 'on_hold' | 'dropped';
 /**
  * Profile Component
  * Manages user profile presentation, role badges (Admin, Moderator, Curator),
- * staff moderation modal, watchlist statistics, showcase favorites, and categorized drama tracks.
+ * featured achievement display, staff moderation modal, and categorized watchlist tracks.
  */
 @Component({
   selector: 'app-profile',
@@ -75,9 +75,6 @@ export class Profile {
     TW: 'Taiwan',
   };
 
-  /**
-   * Computes watchlist aggregation counts.
-   */
   public stats = computed(() => {
     const list = this.userDramas();
     return {
@@ -127,9 +124,12 @@ export class Profile {
 
       if (!targetUser) {
         const current = this.authService.currentProfile();
-        this.viewedProfile.set(current);
-        if (current) this.loadUserDramas(current.id);
-        this.isLoadingProfile.set(false);
+        if (current) {
+          await this.fetchProfileByUsername(current.username);
+        } else {
+          this.viewedProfile.set(null);
+          this.isLoadingProfile.set(false);
+        }
         return;
       }
 
@@ -139,29 +139,20 @@ export class Profile {
   }
 
   /**
-   * Fetches user profile record by username from Supabase.
+   * Fetches user profile record joined with the featured badge from Supabase.
    *
    * @param targetUsername Target username query string.
    */
   private async fetchProfileByUsername(targetUsername: string): Promise<void> {
     this.isLoadingProfile.set(true);
     try {
-      const current = this.authService.currentProfile();
-
-      if (
-        current &&
-        current.username &&
-        current.username.toLowerCase() === targetUsername.toLowerCase()
-      ) {
-        this.viewedProfile.set(current);
-        await this.loadUserDramas(current.id);
-        return;
-      }
-
       const { data, error } = await this.authService
         .getSupabaseClient()
         .from('profiles')
-        .select('*')
+        .select(`
+          *,
+          featured_badge:achievements (*)
+        `)
         .ilike('username', targetUsername)
         .maybeSingle();
 
@@ -170,10 +161,15 @@ export class Profile {
         throw error;
       }
 
-      this.viewedProfile.set(data as UserProfile);
-
       if (data) {
-        await this.loadUserDramas(data.id);
+        const formatted: UserProfile = {
+          ...data,
+          featured_badge: Array.isArray(data.featured_badge) ? data.featured_badge[0] : data.featured_badge,
+        };
+        this.viewedProfile.set(formatted);
+        await this.loadUserDramas(formatted.id);
+      } else {
+        this.viewedProfile.set(null);
       }
     } catch (err) {
       console.error('[Profile] Error loading public profile:', err);
@@ -183,12 +179,6 @@ export class Profile {
     }
   }
 
-  /**
-   * Returns a localized description tooltip for user roles.
-   *
-   * @param role User authorization role.
-   * @returns Formatted tooltip string.
-   */
   public getRoleTooltip(role?: string): string {
     switch (role) {
       case 'admin':
@@ -202,9 +192,6 @@ export class Profile {
     }
   }
 
-  /**
-   * Opens the staff moderation modal populated with current profile values.
-   */
   public openModerationModal(): void {
     const user = this.viewedProfile();
     if (!user) return;
@@ -217,24 +204,15 @@ export class Profile {
     document.body.style.overflow = 'hidden';
   }
 
-  /**
-   * Closes the staff moderation modal.
-   */
   public closeModerationModal(): void {
     this.isModerationModalOpen.set(false);
     document.body.style.overflow = '';
   }
 
-  /**
-   * Resets the avatar image URL to an empty state.
-   */
   public clearAvatar(): void {
     this.modAvatarUrl.set('');
   }
 
-  /**
-   * Persists profile changes made via the staff moderation modal.
-   */
   public async saveModerationChanges(): Promise<void> {
     const user = this.viewedProfile();
     if (!user || this.isSavingModeration()) return;
@@ -247,7 +225,6 @@ export class Profile {
         social_links: this.modSocials(),
       };
 
-      // Only administrators are authorized to alter user roles
       if (this.isAdmin()) {
         updates.role = this.modRole();
       }
@@ -257,12 +234,16 @@ export class Profile {
         .from('profiles')
         .update(updates)
         .eq('id', user.id)
-        .select('*')
+        .select('*, featured_badge:achievements(*)')
         .single();
 
       if (error) throw error;
 
-      this.viewedProfile.set(data as UserProfile);
+      this.viewedProfile.set({
+        ...data,
+        featured_badge: Array.isArray(data.featured_badge) ? data.featured_badge[0] : data.featured_badge,
+      } as UserProfile);
+
       this.closeModerationModal();
     } catch (err) {
       console.error('[Profile] Error saving profile moderation changes:', err);
@@ -271,11 +252,6 @@ export class Profile {
     }
   }
 
-  /**
-   * Loads tracked drama records for the given user ID.
-   *
-   * @param userId Target user unique ID.
-   */
   private async loadUserDramas(userId: string): Promise<void> {
     this.isLoadingDramas.set(true);
     try {
@@ -288,21 +264,10 @@ export class Profile {
     }
   }
 
-  /**
-   * Sets active tab for backlog section.
-   *
-   * @param tab Target backlog category.
-   */
   public setBacklogTab(tab: BacklogTab): void {
     this.activeBacklogTab.set(tab);
   }
 
-  /**
-   * Opens the drama tracker update modal.
-   *
-   * @param drama Tracked drama entity.
-   * @param event Optional DOM click event.
-   */
   public openEditTracker(drama: UserDramaTracker, event?: Event): void {
     if (event) {
       event.preventDefault();
@@ -317,12 +282,6 @@ export class Profile {
     });
   }
 
-  /**
-   * Smoothly scrolls a carousel track element left or right.
-   *
-   * @param elementId DOM container ID.
-   * @param direction 'left' or 'right'.
-   */
   public scrollTrack(elementId: string, direction: 'left' | 'right'): void {
     const el = document.getElementById(elementId);
     if (!el) return;
@@ -330,12 +289,6 @@ export class Profile {
     el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
 
-  /**
-   * Copies text payload to clipboard and triggers confirmation state.
-   *
-   * @param text Text value to copy.
-   * @param type Target payload descriptor.
-   */
   public copyToClipboard(text: string, type: 'discord'): void {
     navigator.clipboard.writeText(text);
     this.copiedDiscord.set(true);

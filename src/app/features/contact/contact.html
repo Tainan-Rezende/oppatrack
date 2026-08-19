@@ -4,24 +4,16 @@
       <i class="fa-solid fa-headset"></i>
     </div>
     <h1>Fale Conosco</h1>
-    <p>Dúvidas, sugestões de doramas ou suporte técnico? Envie sua mensagem.</p>
+    <p>Dúvidas, sugestões de doramas, feedback ou suporte técnico? Envie sua mensagem.</p>
   </header>
 
   <div class="contact-grid">
     <!-- Informações e Canais Rápidos -->
     <div class="contact-info-panel">
       <h2>Canais de Contato</h2>
-      <p class="desc">Nossa comunidade está sempre ativa para ajudar e trocar recomendações de produções asiáticas.</p>
+      <p class="desc">Nossa equipe e comunidade estão sempre ativas para ajudar e trocar recomendações de produções asiáticas.</p>
 
       <div class="channels-list">
-        <div class="channel-card">
-          <i class="fa-solid fa-robot channel-icon"></i>
-          <div class="channel-text">
-            <strong>Bot Oficial OppaTrack</strong>
-            <span>Gere seu código /webtoken para entrar</span>
-          </div>
-        </div>
-
         <div class="channel-card">
           <i class="fa-solid fa-envelope channel-icon"></i>
           <div class="channel-text">
@@ -34,7 +26,15 @@
           <i class="fa-brands fa-discord channel-icon"></i>
           <div class="channel-text">
             <strong>Comunidade Discord</strong>
-            <span>Participe das discussões semanais</span>
+            <span>Participe das discussões e maratonas semanais</span>
+          </div>
+        </div>
+
+        <div class="channel-card">
+          <i class="fa-solid fa-comments channel-icon"></i>
+          <div class="channel-text">
+            <strong>Curadoria & Catálogo</strong>
+            <span>Sugira novos dramas, elencos e correções</span>
           </div>
         </div>
       </div>
@@ -46,7 +46,7 @@
         <div class="success-message">
           <i class="fa-solid fa-circle-check"></i>
           <h3>Mensagem Enviada com Sucesso!</h3>
-          <p>Agradecemos o seu contato. Retornaremos assim que possível.</p>
+          <p>Agradecemos o seu contato. Nossa equipe responderá assim que possível.</p>
           <button type="button" class="btn-new-msg" (click)="isSubmitted.set(false)">
             Enviar outra mensagem
           </button>
@@ -70,7 +70,7 @@
             <input
               id="c-email"
               type="email"
-              placeholder="your@email.com"
+              placeholder="seu@email.com"
               [value]="email()"
               (input)="email.set($any($event.target).value)"
               required
@@ -84,9 +84,10 @@
               [value]="subject()"
               (change)="subject.set($any($event.target).value)"
             >
-              <option value="sugestao">Sugestão de Dorama</option>
+              <option value="sugestao">Sugestão de Dorama ou Elenco</option>
               <option value="suporte">Suporte com Minha Conta</option>
               <option value="bug">Relatar Erro / Bug no Catálogo</option>
+              <option value="moderacao">Denúncia / Moderação de Comentário</option>
               <option value="outro">Outro Assunto</option>
             </select>
           </div>
@@ -96,7 +97,7 @@
             <textarea
               id="c-msg"
               rows="4"
-              placeholder="Escreva sua mensagem aqui..."
+              placeholder="Escreva sua mensagem detalhada aqui..."
               [value]="message()"
               (input)="message.set($any($event.target).value)"
               required

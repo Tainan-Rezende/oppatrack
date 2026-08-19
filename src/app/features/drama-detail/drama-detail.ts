@@ -90,7 +90,7 @@ export class DramaDetail implements OnInit, OnDestroy {
     const total = list.length;
     const scores = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
 
-    return scores.map((score) => {
+    return (scores || []).map((score) => {
       const count = list.filter((r) => Math.round(r.rating) === score).length;
       const percentage = total > 0 ? (count / total) * 100 : 0;
       return { score, count, percentage };
